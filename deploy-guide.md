@@ -40,7 +40,7 @@ ssh root@IP_DA_DIGITAL_OCEAN
 
 Dentro da máquina, faça o clone do seu projeto:
 ```bash
-git clone ENDERECO_DO_SEU_REPOSITORIO.git projeto-cisne
+git clone https://github.com/GrupoCisne/Grupo-Cisne-Site.git projeto-cisne
 cd projeto-cisne
 ```
 
