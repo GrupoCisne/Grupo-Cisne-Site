@@ -459,7 +459,7 @@ function ChatScreen({ lead, onDone }: { lead: LeadCapture; onDone: (json: Record
       setMessages((p) => [...p, { id: `u-${Date.now()}`, type: 'user', text: trimmed }])
       setInputValue('')
 
-      const newConv = [...conversation, { role: 'user', content: trimmed }]
+      const newConv: ConversationMessage[] = [...conversation, { role: 'user', content: trimmed }]
       setConversation(newConv)
 
       try {

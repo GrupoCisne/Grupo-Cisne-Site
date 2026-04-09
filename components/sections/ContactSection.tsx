@@ -12,7 +12,7 @@ export default function ContactSection() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Como o n8n ficou pro futuro, geramos um link pro seu WhatsApp provisoriamente
+    const messageText = `Olá, vim pelo site!%0A*Nome:* ${formData.name}%0A*Email:* ${formData.email}%0A*Mensagem:* ${formData.message}`
     const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5511000000000'
     const wppUrl = `https://wa.me/${whatsappNumber}?text=${messageText}` 
     
