@@ -60,7 +60,7 @@ export default function Testimonials() {
             Resultados Reais
           </p>
           <h2
-            className="text-3xl lg:text-5xl font-black tracking-tight mb-4"
+            className="text-3xl lg:text-5xl font-semibold tracking-tight mb-4"
             style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
           >
             O que nossos clientes dizem
@@ -81,7 +81,7 @@ export default function Testimonials() {
                   </p>
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0"
                       style={{
                         background: 'var(--interactive-muted)',
                         color: 'var(--interactive-pressed)',

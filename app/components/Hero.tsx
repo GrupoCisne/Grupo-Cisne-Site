@@ -16,7 +16,7 @@ export default function Hero() {
       <div className="relative z-10 max-w-5xl mx-auto px-6 lg:px-8 text-center">
         {/* Badge */}
         <div
-          className="inline-flex items-center gap-3 rounded-full border px-6 py-2.5 text-[10px] font-bold tracking-[0.2em] uppercase mb-8 backdrop-blur-md"
+          className="inline-flex items-center gap-3 rounded-full border px-6 py-2.5 text-[10px] font-semibold tracking-[0.2em] uppercase mb-8 backdrop-blur-md"
           style={{
             borderColor: 'var(--border-default)',
             background: 'rgba(255,255,255,0.03)',
@@ -32,7 +32,7 @@ export default function Hero() {
 
         {/* Headline */}
         <h1
-          className="text-5xl lg:text-7xl font-black leading-[0.95] tracking-[-0.04em] mb-6 text-gradient"
+          className="text-5xl lg:text-7xl font-semibold leading-[0.95] tracking-[-0.04em] mb-6 text-gradient"
           style={{ fontFamily: 'var(--font-urbanist)' }}
         >
           Seja o{' '}
@@ -55,7 +55,7 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
           <a
             href="#cta"
-            className="inline-flex items-center gap-2 font-bold px-10 py-4 rounded-full transition-all duration-200 hover:-translate-y-px"
+            className="inline-flex items-center gap-2 font-semibold px-10 py-4 rounded-full transition-all duration-200 hover:-translate-y-px"
             style={{
               background: 'var(--interactive-pressed)',
               color: 'var(--blue-1000)',
@@ -95,7 +95,7 @@ export default function Hero() {
           ].map((s) => (
             <div key={s.label} className="text-center">
               <p
-                className="text-3xl font-black tracking-tight"
+                className="text-3xl font-semibold tracking-tight"
                 style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--interactive-pressed)' }}
               >
                 {s.value}

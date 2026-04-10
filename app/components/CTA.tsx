@@ -45,7 +45,7 @@ export default function CTA() {
                 Vamos conversar
               </p>
               <h2
-                className="text-3xl lg:text-5xl font-black tracking-tight mb-6 leading-tight"
+                className="text-3xl lg:text-5xl font-semibold tracking-tight mb-6 leading-tight"
                 style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
               >
                 Preparado para revolucionar seu mercado?
@@ -89,7 +89,7 @@ export default function CTA() {
                       <path d="M6 14l5.5 5.5 10.5-11" stroke="var(--interactive-pressed)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}>
+                  <h3 className="text-xl font-semibold mb-2" style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}>
                     Mensagem enviada!
                   </h3>
                   <p className="text-sm" style={{ color: 'var(--content-default)' }}>
@@ -106,7 +106,7 @@ export default function CTA() {
               ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                   <h3
-                    className="text-xl font-bold mb-2"
+                    className="text-xl font-semibold mb-2"
                     style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
                   >
                     Iniciar conversa
@@ -149,7 +149,7 @@ export default function CTA() {
                   />
                   <button
                     type="submit"
-                    className="w-full font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-px"
+                    className="w-full font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-px"
                     style={{
                       background: 'var(--interactive-pressed)',
                       color: 'var(--blue-1000)',

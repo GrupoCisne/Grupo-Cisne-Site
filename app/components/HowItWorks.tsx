@@ -15,7 +15,7 @@ const steps = [
     number: '03',
     title: 'A Construção',
     subtitle: 'Build',
-    description: 'Nossos squads de IA e especialistas humanos entram em ação. Copy, Design e Código ganham vida através da estética Black Swan.',
+    description: 'Nossos squads de IA e especialistas humanos entram em ação. Copy, Design e Código ganham vida através da estética Grupo Cisne.',
   },
   {
     number: '04',
@@ -39,7 +39,7 @@ export default function HowItWorks() {
             Nosso Processo
           </p>
           <h2
-            className="text-3xl lg:text-5xl font-black tracking-tight mb-4"
+            className="text-3xl lg:text-5xl font-semibold tracking-tight mb-4"
             style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
           >
             Sua metamorfose,{' '}
@@ -60,7 +60,7 @@ export default function HowItWorks() {
             >
               {/* Watermark number */}
               <span
-                className="absolute -top-3 -right-2 text-9xl font-black select-none pointer-events-none transition-transform duration-500 group-hover:scale-110"
+                className="absolute -top-3 -right-2 text-9xl font-semibold select-none pointer-events-none transition-transform duration-500 group-hover:scale-110"
                 style={{
                   fontFamily: 'var(--font-urbanist)',
                   color: i === 0 ? 'rgba(106,174,222,0.08)' : 'rgba(255,255,255,0.03)',
@@ -80,7 +80,7 @@ export default function HowItWorks() {
               <div className="relative z-10">
                 {/* Number badge */}
                 <div
-                  className="inline-flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold mb-6 border"
+                  className="inline-flex items-center justify-center w-10 h-10 rounded-full text-sm font-semibold mb-6 border"
                   style={{
                     borderColor: i === 0 ? 'var(--interactive-pressed)' : 'var(--border-strong)',
                     color: i === 0 ? 'var(--interactive-pressed)' : 'var(--content-subtle)',
@@ -90,13 +90,13 @@ export default function HowItWorks() {
                 </div>
 
                 <p
-                  className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2"
+                  className="text-[10px] font-semibold uppercase tracking-[0.2em] mb-2"
                   style={{ color: 'var(--interactive-pressed)' }}
                 >
                   {step.subtitle}
                 </p>
                 <h3
-                  className="text-2xl font-bold mb-4"
+                  className="text-2xl font-semibold mb-4"
                   style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
                 >
                   {step.title}

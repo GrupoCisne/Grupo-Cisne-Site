@@ -20,7 +20,7 @@ export default function SocialProof() {
           Resultados comprovados
         </p>
         <h2
-          className="text-2xl lg:text-3xl font-bold"
+          className="text-2xl lg:text-3xl font-semibold"
           style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
         >
           Presença de elite em todos os segmentos

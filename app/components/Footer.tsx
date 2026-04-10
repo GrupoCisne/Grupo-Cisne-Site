@@ -51,10 +51,10 @@ export default function Footer() {
           <div className="md:col-span-1">
             <a href="/" className="inline-block mb-4">
               <span
-                className="text-xl font-bold"
+                className="text-xl font-semibold"
                 style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
               >
-                Cisne <span style={{ color: 'var(--interactive-pressed)' }}>Negro</span>
+                Grupo <span style={{ color: 'var(--interactive-pressed)' }}>Cisne</span>
               </span>
             </a>
             <p className="text-sm leading-relaxed max-w-xs mb-6" style={{ color: 'var(--content-subtle)' }}>
@@ -94,7 +94,7 @@ export default function Footer() {
           {/* Navigation */}
           <div>
             <h4
-              className="text-xs font-bold uppercase tracking-widest mb-5"
+              className="text-xs font-semibold uppercase tracking-widest mb-5"
               style={{ color: 'var(--content-subtle)' }}
             >
               Navegação
@@ -119,7 +119,7 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <h4
-              className="text-xs font-bold uppercase tracking-widest mb-5"
+              className="text-xs font-semibold uppercase tracking-widest mb-5"
               style={{ color: 'var(--content-subtle)' }}
             >
               Contato

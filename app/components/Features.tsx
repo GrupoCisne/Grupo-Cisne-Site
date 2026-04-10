@@ -50,7 +50,7 @@ export default function Features() {
             Serviços
           </p>
           <h2
-            className="text-3xl lg:text-5xl font-black tracking-tight mb-4"
+            className="text-3xl lg:text-5xl font-semibold tracking-tight mb-4"
             style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
           >
             Cada entrega é uma metamorfose.
@@ -78,7 +78,7 @@ export default function Features() {
                   {services[0].icon}
                 </span>
                 <span
-                  className="text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full"
+                  className="text-[10px] font-semibold uppercase tracking-[0.2em] px-3 py-1 rounded-full"
                   style={{
                     background: 'var(--interactive-muted)',
                     color: 'var(--interactive-pressed)',
@@ -88,7 +88,7 @@ export default function Features() {
                 </span>
               </div>
               <h3
-                className="text-2xl lg:text-3xl font-bold mb-4"
+                className="text-2xl lg:text-3xl font-semibold mb-4"
                 style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
               >
                 {services[0].title}
@@ -129,20 +129,20 @@ export default function Features() {
                   {s.icon}
                 </span>
                 <span
-                  className="text-3xl font-black"
+                  className="text-3xl font-semibold"
                   style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--border-strong)' }}
                 >
                   {s.number}
                 </span>
               </div>
               <span
-                className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 relative z-10"
+                className="text-[10px] font-semibold uppercase tracking-[0.2em] mb-4 relative z-10"
                 style={{ color: 'var(--interactive-pressed)' }}
               >
                 {s.label}
               </span>
               <h3
-                className="text-lg font-bold mb-3 relative z-10"
+                className="text-lg font-semibold mb-3 relative z-10"
                 style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
               >
                 {s.title}

@@ -40,7 +40,7 @@ export default function FAQ() {
             FAQ
           </p>
           <h2
-            className="text-3xl lg:text-5xl font-black tracking-tight mb-4"
+            className="text-3xl lg:text-5xl font-semibold tracking-tight mb-4"
             style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
           >
             Perguntas frequentes

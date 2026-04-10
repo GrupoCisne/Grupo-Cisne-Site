@@ -26,7 +26,7 @@ export default function Integrations() {
                 Tech Stack
               </p>
               <h2
-                className="text-3xl lg:text-4xl font-black tracking-tight mb-4"
+                className="text-3xl lg:text-4xl font-semibold tracking-tight mb-4"
                 style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
               >
                 Tecnologia proprietária que nenhuma outra agência tem.
@@ -54,7 +54,7 @@ export default function Integrations() {
                       <span className="w-2 h-2 rounded-full" style={{ background: 'var(--interactive-pressed)' }} />
                     </div>
                     <div>
-                      <p className="font-bold text-sm" style={{ color: 'var(--content-strong)' }}>
+                      <p className="font-semibold text-sm" style={{ color: 'var(--content-strong)' }}>
                         {t.name}
                       </p>
                       <p className="text-xs" style={{ color: 'var(--content-subtle)' }}>
@@ -88,7 +88,7 @@ export default function Integrations() {
                 return (
                   <div
                     key={t.name}
-                    className={`absolute ${positions[i]} rounded-xl px-4 py-2 border text-xs font-bold`}
+                    className={`absolute ${positions[i]} rounded-xl px-4 py-2 border text-xs font-semibold`}
                     style={{
                       background: 'rgba(12,18,29,0.8)',
                       backdropFilter: 'blur(12px)',

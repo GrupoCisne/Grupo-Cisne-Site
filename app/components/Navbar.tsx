@@ -33,9 +33,9 @@ export default function Navbar() {
         }`}
       >
         {/* Logo */}
-        <a href="/" className="font-urbanist text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-urbanist)' }}>
-          <span style={{ color: 'var(--content-strong)' }}>Cisne </span>
-          <span style={{ color: 'var(--interactive-pressed)' }}>Negro</span>
+        <a href="/" className="font-urbanist text-xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-urbanist)' }}>
+          <span style={{ color: 'var(--content-strong)' }}>Grupo </span>
+          <span style={{ color: 'var(--interactive-pressed)' }}>Cisne</span>
         </a>
 
         {/* Desktop nav */}
@@ -59,7 +59,7 @@ export default function Navbar() {
         <div className="hidden md:block">
           <a
             href="#cta"
-            className="inline-flex items-center gap-2 text-sm font-bold px-6 py-2.5 rounded-full transition-all duration-200 hover:-translate-y-px"
+            className="inline-flex items-center gap-2 text-sm font-semibold px-6 py-2.5 rounded-full transition-all duration-200 hover:-translate-y-px"
             style={{
               background: 'var(--interactive-pressed)',
               color: 'var(--blue-1000)',
@@ -113,7 +113,7 @@ export default function Navbar() {
           ))}
           <a
             href="#cta"
-            className="inline-flex justify-center items-center font-bold py-3 rounded-full text-sm"
+            className="inline-flex justify-center items-center font-semibold py-3 rounded-full text-sm"
             style={{ background: 'var(--interactive-pressed)', color: 'var(--blue-1000)' }}
           >
             Falar com o time
