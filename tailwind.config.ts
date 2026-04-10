@@ -10,7 +10,17 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-inter)', 'sans-serif'],
+        tight: ['var(--font-inter-tight)', 'sans-serif'],
         urbanist: ['var(--font-urbanist)', 'sans-serif'],
+      },
+      animation: {
+        marquee: 'marquee 30s linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
       },
       colors: {
         surface: {
