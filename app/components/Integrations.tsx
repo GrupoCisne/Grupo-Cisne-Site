@@ -1,11 +1,215 @@
 'use client'
 
+import { motion } from 'framer-motion'
+
 const stack = [
-  { name: 'Next.js', desc: 'Performance máxima e SEO técnico de ponta' },
-  { name: 'n8n', desc: 'Automações e integrações sem limite de escala' },
-  { name: 'Meta Ads', desc: 'Tráfego pago de alta conversão' },
+  { name: 'Next.js',    desc: 'Performance máxima e SEO técnico de ponta' },
+  { name: 'n8n',        desc: 'Automações e integrações sem limite de escala' },
+  { name: 'Meta Ads',   desc: 'Tráfego pago de alta conversão' },
   { name: 'Google Ads', desc: 'Presença no exato momento de intenção' },
 ]
+
+// ─── Flow Diagram ─────────────────────────────────────────────────────────────
+const CX = 200
+const CY = 200
+const NODE_R = 30
+const HUB_R = 44
+
+const nodes = [
+  { id: 'meta',   label: 'Meta Ads',   x: 200, y: 56,  symbol: 'M',   color: '#1877F2', delay: 0.1  },
+  { id: 'google', label: 'Google Ads', x: 356, y: 200, symbol: 'G',   color: '#4285F4', delay: 0.25 },
+  { id: 'nextjs', label: 'Next.js',    x: 200, y: 344, symbol: 'N',   color: '#e2e8f0', delay: 0.4  },
+  { id: 'n8n',    label: 'n8n',        x: 44,  y: 200, symbol: 'n8n', color: '#EA4B71', delay: 0.55 },
+]
+
+function edgePt(nx: number, ny: number, r: number) {
+  const d = Math.hypot(CX - nx, CY - ny)
+  return { x: nx + ((CX - nx) / d) * r, y: ny + ((CY - ny) / d) * r }
+}
+
+function hubPt(nx: number, ny: number) {
+  const d = Math.hypot(CX - nx, CY - ny)
+  return { x: CX + ((nx - CX) / d) * HUB_R, y: CY + ((ny - CY) / d) * HUB_R }
+}
+
+function FlowDiagram() {
+  return (
+    <svg viewBox="0 0 400 400" className="w-full h-full" style={{ overflow: 'visible' }}>
+      <defs>
+        {/* Glow para partículas */}
+        <filter id="fg-particle" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="2.5" result="b" />
+          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        {/* Glow para o hub */}
+        <filter id="fg-hub" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="8" result="b" />
+          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        {/* Caminhos ocultos para animateMotion */}
+        {nodes.map(n => {
+          const s = edgePt(n.x, n.y, NODE_R + 2)
+          const e = hubPt(n.x, n.y)
+          return (
+            <path
+              key={n.id}
+              id={`pp-${n.id}`}
+              d={`M${s.x},${s.y}L${e.x},${e.y}`}
+              fill="none"
+            />
+          )
+        })}
+      </defs>
+
+      {/* Linhas de conexão */}
+      {nodes.map(n => {
+        const s = edgePt(n.x, n.y, NODE_R + 2)
+        const e = hubPt(n.x, n.y)
+        return (
+          <motion.path
+            key={n.id}
+            d={`M${s.x},${s.y}L${e.x},${e.y}`}
+            stroke="rgba(106,174,222,0.18)"
+            strokeWidth="1.5"
+            fill="none"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 0.7, delay: n.delay, ease: 'easeOut' }}
+          />
+        )
+      })}
+
+      {/* Partículas viajando pelas linhas */}
+      {nodes.flatMap((n, i) =>
+        [0, 1].map(j => (
+          <circle
+            key={`${n.id}-p${j}`}
+            r="3.5"
+            fill="#6AAEDE"
+            filter="url(#fg-particle)"
+            opacity="0.9"
+          >
+            <animateMotion
+              dur={`${1.8 + i * 0.15}s`}
+              repeatCount="indefinite"
+              begin={`${j * (0.9 + i * 0.07)}s`}
+            >
+              <mpath href={`#pp-${n.id}`} />
+            </animateMotion>
+          </circle>
+        ))
+      )}
+
+      {/* Anel rotativo ao redor do hub */}
+      <motion.circle
+        cx={CX} cy={CY} r={HUB_R + 18}
+        fill="none"
+        stroke="rgba(106,174,222,0.09)"
+        strokeWidth="1"
+        strokeDasharray="5 8"
+        animate={{ rotate: [0, 360] }}
+        transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
+        style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+      />
+
+      {/* Pulso do hub (2 anéis alternados) */}
+      {[0, 1].map(i => (
+        <motion.circle
+          key={i}
+          cx={CX} cy={CY} r={HUB_R + 8}
+          fill="none"
+          stroke="rgba(106,174,222,0.25)"
+          strokeWidth="1"
+          animate={{ scale: [1, 1.7], opacity: [0.5, 0] }}
+          transition={{ duration: 2.6, repeat: Infinity, ease: 'easeOut', delay: i * 1.3 }}
+          style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+        />
+      ))}
+
+      {/* Nós das ferramentas */}
+      {nodes.map(n => (
+        <motion.g
+          key={n.id}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 220, damping: 20, delay: n.delay }}
+          style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+        >
+          {/* Fundo do nó */}
+          <circle
+            cx={n.x} cy={n.y} r={NODE_R}
+            fill="rgba(12,18,29,0.94)"
+            stroke="rgba(148,163,184,0.18)"
+            strokeWidth="1"
+          />
+          {/* Símbolo */}
+          <text
+            x={n.x}
+            y={n.y + (n.symbol.length > 1 ? 4 : 5)}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill={n.color}
+            fontSize={n.symbol.length > 1 ? '8' : '13'}
+            fontWeight="600"
+            fontFamily="var(--font-inter), system-ui, sans-serif"
+          >
+            {n.symbol}
+          </text>
+          {/* Label abaixo */}
+          <text
+            x={n.x}
+            y={n.y + NODE_R + 15}
+            textAnchor="middle"
+            fill="rgba(177,192,208,0.6)"
+            fontSize="9"
+            fontFamily="var(--font-inter), system-ui, sans-serif"
+          >
+            {n.label}
+          </text>
+        </motion.g>
+      ))}
+
+      {/* Hub central */}
+      <motion.g
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 150, damping: 18, delay: 0.75 }}
+        style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+      >
+        <circle
+          cx={CX} cy={CY} r={HUB_R}
+          fill="rgba(58,136,196,0.1)"
+          stroke="rgba(106,174,222,0.42)"
+          strokeWidth="1.5"
+          filter="url(#fg-hub)"
+        />
+        <text
+          x={CX} y={CY - 5}
+          textAnchor="middle"
+          fill="rgba(248,250,252,0.88)"
+          fontSize="8.5"
+          fontWeight="600"
+          letterSpacing="0.1em"
+          fontFamily="var(--font-urbanist), system-ui, sans-serif"
+        >
+          GRUPO
+        </text>
+        <text
+          x={CX} y={CY + 9}
+          textAnchor="middle"
+          fill="rgba(106,174,222,0.88)"
+          fontSize="8.5"
+          fontWeight="600"
+          letterSpacing="0.1em"
+          fontFamily="var(--font-urbanist), system-ui, sans-serif"
+        >
+          CISNE
+        </text>
+      </motion.g>
+    </svg>
+  )
+}
+// ──────────────────────────────────────────────────────────────────────────────
 
 export default function Integrations() {
   return (
@@ -17,7 +221,7 @@ export default function Integrations() {
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 items-center">
 
-            {/* Text */}
+            {/* Texto */}
             <div className="p-12 lg:p-16">
               <p
                 className="text-xs font-semibold uppercase tracking-widest mb-3"
@@ -39,7 +243,7 @@ export default function Integrations() {
                 {stack.map((t) => (
                   <div
                     key={t.name}
-                    className="flex items-center gap-4 rounded-2xl p-4 border transition-all duration-300 group"
+                    className="flex items-center gap-4 rounded-2xl p-4 border transition-all duration-300"
                     style={{
                       background: 'rgba(255,255,255,0.02)',
                       borderColor: 'var(--border-default)',
@@ -66,49 +270,14 @@ export default function Integrations() {
               </div>
             </div>
 
-            {/* Visual */}
+            {/* Diagrama animado */}
             <div
-              className="relative h-full min-h-[420px] flex items-center justify-center p-12"
+              className="relative h-full min-h-[440px] flex items-center justify-center p-10"
               style={{ background: 'linear-gradient(135deg, var(--blue-800), var(--blue-900))' }}
             >
-              {/* Central orb */}
-              <div
-                className="w-24 h-24 rounded-2xl flex items-center justify-center glow-mid"
-                style={{ background: 'var(--interactive-default)' }}
-              >
-                <svg width="38" height="38" viewBox="0 0 40 40" fill="none">
-                  <path d="M20 8L32 14V26L20 32L8 26V14L20 8Z" stroke="white" strokeWidth="1.5" fill="none"/>
-                  <circle cx="20" cy="20" r="4" fill="white"/>
-                </svg>
-              </div>
-
-              {/* Floating badges */}
-              {stack.map((t, i) => {
-                const positions = ['top-8 left-8', 'top-8 right-8', 'bottom-8 left-8', 'bottom-8 right-8']
-                return (
-                  <div
-                    key={t.name}
-                    className={`absolute ${positions[i]} rounded-xl px-4 py-2 border text-xs font-semibold`}
-                    style={{
-                      background: 'rgba(12,18,29,0.8)',
-                      backdropFilter: 'blur(12px)',
-                      borderColor: 'var(--border-strong)',
-                      color: 'var(--content-strong)',
-                    }}
-                  >
-                    {t.name}
-                  </div>
-                )
-              })}
-
-              {/* Connection lines (decorative) */}
-              <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 400 400">
-                <line x1="80" y1="80" x2="200" y2="200" stroke="var(--interactive-default)" strokeWidth="1" strokeDasharray="4"/>
-                <line x1="320" y1="80" x2="200" y2="200" stroke="var(--interactive-default)" strokeWidth="1" strokeDasharray="4"/>
-                <line x1="80" y1="320" x2="200" y2="200" stroke="var(--interactive-default)" strokeWidth="1" strokeDasharray="4"/>
-                <line x1="320" y1="320" x2="200" y2="200" stroke="var(--interactive-default)" strokeWidth="1" strokeDasharray="4"/>
-              </svg>
+              <FlowDiagram />
             </div>
+
           </div>
         </div>
       </div>
