@@ -35,11 +35,10 @@ export default function Hero() {
           className="text-5xl lg:text-7xl font-semibold leading-[0.95] tracking-[-0.04em] mb-6 text-gradient"
           style={{ fontFamily: 'var(--font-urbanist)' }}
         >
-          Seja o{' '}
+          Construímos marcas que{' '}
           <span style={{ color: 'var(--interactive-pressed)', WebkitTextFillColor: 'var(--interactive-pressed)' }}>
-            Cisne Negro
-          </span>{' '}
-          do seu mercado.
+            o mercado não esquece.
+          </span>
         </h1>
 
         {/* Subtitle */}
@@ -47,8 +46,8 @@ export default function Hero() {
           className="text-lg lg:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
           style={{ color: 'var(--content-default)' }}
         >
-          Você não precisa de mais uma agência. Você precisa do ponto de inflexão
-          que ninguém viu chegar. Estratégia, Data e Tecnologia em harmonia absoluta.
+          Você não precisa de mais uma agência. Você precisa de uma equipe que une
+          Estratégia, Data e Tecnologia para construir a presença que o seu mercado vai seguir.
         </p>
 
         {/* CTAs */}
@@ -62,7 +61,7 @@ export default function Hero() {
               boxShadow: '0 0 32px var(--interactive-glow)',
             }}
           >
-            Despertar Agora
+            Começar Agora
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M3.75 9h10.5M9.75 4.5l4.5 4.5-4.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>

@@ -15,7 +15,7 @@ const urbanist = Urbanist({
 })
 
 export const metadata: Metadata = {
-  title: 'Grupo Cisne — Seja o Cisne Negro do seu mercado',
+  title: 'Grupo Cisne — Marketing Digital Premium',
   description:
     'Estratégia, Data e Tecnologia em harmonia absoluta. Marketing Digital premium para empresas que querem dominar seus mercados.',
 }

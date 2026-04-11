@@ -1,7 +1,7 @@
 const steps = [
   {
     number: '01',
-    title: 'O Despertar',
+    title: 'A Imersão',
     subtitle: 'Discovery',
     description: 'Mergulho profundo no seu negócio. Não perguntamos apenas "o quê", mas o "porquê". Encontramos o seu verdadeiro diferencial competitivo.',
   },
