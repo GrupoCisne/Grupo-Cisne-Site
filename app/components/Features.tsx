@@ -53,10 +53,10 @@ export default function Features() {
             className="text-3xl lg:text-5xl font-semibold tracking-tight mb-4"
             style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
           >
-            Cada entrega é uma metamorfose.
+            Cinco frentes. Uma estratégia. Um resultado.
           </h2>
           <p className="text-lg leading-relaxed" style={{ color: 'var(--content-default)' }}>
-            Não gerenciamos processos. Orquestramos transformações.
+            Do branding ao tráfego pago — cada serviço é uma alavanca de crescimento dentro de uma estratégia integrada.
           </p>
         </div>
 

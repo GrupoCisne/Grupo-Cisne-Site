@@ -48,17 +48,17 @@ export default function CTA() {
                 className="text-3xl lg:text-5xl font-semibold tracking-tight mb-6 leading-tight"
                 style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--content-strong)' }}
               >
-                Preparado para revolucionar seu mercado?
+                Pronto para dominar o seu mercado?
               </h2>
               <p className="text-lg leading-relaxed mb-8" style={{ color: 'var(--content-default)' }}>
-                Deixe-nos ser a equipe que escala o impossível para o seu negócio.
-                Preencha o formulário e entraremos em contato em até 24h.
+                Conta pra gente onde o seu negócio está e onde quer chegar.
+                A gente monta a estratégia. Preencha o formulário e retornamos em até 24h.
               </p>
               <div className="flex flex-col gap-4">
                 {[
-                  'Discovery gratuito sem compromisso',
-                  'Proposta personalizada ao seu negócio',
-                  'Resultados com metodologia comprovada',
+                  'Discovery gratuito — sem enrolação, sem compromisso',
+                  'Diagnóstico honesto de onde o seu marketing está perdendo dinheiro',
+                  'Proposta personalizada com estratégia e ROI estimado',
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-3">
                     <div

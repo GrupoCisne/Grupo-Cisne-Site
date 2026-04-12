@@ -35,9 +35,9 @@ export default function Hero() {
           className="text-5xl lg:text-7xl font-semibold leading-[0.95] tracking-[-0.04em] mb-6 text-gradient"
           style={{ fontFamily: 'var(--font-urbanist)' }}
         >
-          Construímos marcas que{' '}
+          Escalamos empresas no digital.{' '}
           <span style={{ color: 'var(--interactive-pressed)', WebkitTextFillColor: 'var(--interactive-pressed)' }}>
-            o mercado não esquece.
+            Seja o cisne negro do seu mercado.
           </span>
         </h1>
 
@@ -46,8 +46,8 @@ export default function Hero() {
           className="text-lg lg:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
           style={{ color: 'var(--content-default)' }}
         >
-          Você não precisa de mais uma agência. Você precisa de uma equipe que une
-          Estratégia, Data e Tecnologia para construir a presença que o seu mercado vai seguir.
+          Marketing digital completo — do branding ao tráfego — para transformar
+          o seu negócio no evento que o seu mercado não estava esperando.
         </p>
 
         {/* CTAs */}
