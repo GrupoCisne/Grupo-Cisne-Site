@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:api.github.com)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "WebSearch",
+      "WebFetch(domain:edifycontent.com)",
+      "WebFetch(domain:erinpennings.com)",
+      "WebFetch(domain:thrivethemes.com)",
+      "WebFetch(domain:copyhackers.com)"
     ]
   }
 }
