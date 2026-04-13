@@ -5,7 +5,7 @@ import { useState } from 'react'
 const faqs = [
   {
     q: 'Para que tipo de empresa o Grupo Cisne é indicado?',
-    a: 'Trabalhamos com empresas que querem sair do lugar-comum e se tornar referência no mercado. Do prestador de serviços local à empresa B2B em expansão — desde que você queira crescer de verdade, temos o método para isso.',
+    a: 'Trabalhamos com empresas que querem sair do lugar-comum e se tornar referência no mercado. Do prestador de serviços local à empresa B2B em expansão. Se você quer crescer de verdade, temos o método para isso.',
   },
   {
     q: 'Quanto tempo leva para ver resultados?',
@@ -13,7 +13,7 @@ const faqs = [
   },
   {
     q: 'Como funciona o processo de onboarding?',
-    a: 'Começamos com um Discovery aprofundado — uma sessão estratégica onde mapeamos seu negócio, diferencial competitivo e objetivos. A partir daí construímos o plano e apresentamos antes de qualquer execução. Zero surpresas.',
+    a: 'Começamos com um Discovery aprofundado: uma sessão estratégica onde mapeamos seu negócio, diferencial competitivo e objetivos. A partir daí construímos o plano e apresentamos antes de qualquer execução. Zero surpresas.',
   },
   {
     q: 'Vocês têm contratos de fidelidade?',

@@ -2,32 +2,32 @@ const testimonials = [
   {
     quote: 'Em 60 dias o nosso site passou a aparecer na primeira página do Google. O ROI foi imediato e o tráfego orgânico triplicou.',
     name: 'Ricardo M.',
-    title: 'CEO — Clínica Odontológica',
+    title: 'CEO,Clínica Odontológica',
   },
   {
     quote: 'Nunca achei que branding pudesse mudar tanto a percepção de preço. Hoje cobramos 40% mais e o cliente percebe o valor.',
     name: 'Fernanda L.',
-    title: 'Fundadora — Consultoria Jurídica',
+    title: 'Fundadora,Consultoria Jurídica',
   },
   {
     quote: 'As campanhas de tráfego pago que eles estruturaram geraram o melhor ROAS que tivemos em 3 anos de operação.',
     name: 'Thiago P.',
-    title: 'Diretor Comercial — E-commerce',
+    title: 'Diretor Comercial,E-commerce',
   },
   {
     quote: 'O copy do nosso lançamento converteu 4× mais do que a média do mercado. A equipe é absurdamente boa.',
     name: 'Mariana S.',
-    title: 'Co-fundadora — EdTech',
+    title: 'Co-fundadora,EdTech',
   },
   {
     quote: 'Do zero ao posicionamento premium em 90 dias. A identidade visual ficou tão forte que virou referência no setor.',
     name: 'Carlos A.',
-    title: 'Sócio — Escritório de Arquitetura',
+    title: 'Sócio,Escritório de Arquitetura',
   },
   {
     quote: 'Nossa comunidade no Instagram cresceu 10k seguidores em 45 dias sem anúncio, só com a estratégia de conteúdo deles.',
     name: 'Juliana R.',
-    title: 'CEO — Studio de Fitness',
+    title: 'CEO,Studio de Fitness',
   },
 ]
 

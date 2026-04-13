@@ -46,7 +46,7 @@ export default function Hero() {
           className="text-lg lg:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
           style={{ color: 'var(--content-default)' }}
         >
-          Marketing digital completo — branding, redes, tráfego e tecnologia —
+          Marketing digital completo: branding, redes, tráfego e tecnologia
           para transformar a sua empresa na referência que o seu mercado não estava esperando.
         </p>
 

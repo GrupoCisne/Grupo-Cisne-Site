@@ -236,7 +236,7 @@ export default function Integrations() {
                 Tecnologia proprietária que nenhuma outra agência tem.
               </h2>
               <p className="text-lg leading-relaxed mb-8" style={{ color: 'var(--content-default)' }}>
-                Construímos com as ferramentas certas — do código ao pixel — para que
+                Construímos com as ferramentas certas, do código ao pixel, para que
                 cada entrega gere resultados mensuráveis e replicáveis.
               </p>
               <div className="flex flex-col gap-3">

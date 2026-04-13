@@ -3,14 +3,14 @@ const services = [
     number: '01',
     label: 'Web Design',
     title: 'Presença que paralisa',
-    description: 'Sites que não são visitados — são experienciados. Arquitetados para converter e impossíveis de ignorar.',
+    description: 'Sites que não são visitados. São experienciados. Arquitetados para converter e impossíveis de ignorar.',
     icon: '◈',
   },
   {
     number: '02',
     label: 'Identidade Visual',
     title: 'A marca que o mercado não esquece',
-    description: 'Do arquétipo à paleta — construímos a identidade que posiciona você como referência inevitável.',
+    description: 'Do arquétipo à paleta, construímos a identidade que posiciona você como referência inevitável.',
     icon: '◇',
   },
   {
@@ -31,7 +31,7 @@ const services = [
     number: '05',
     label: 'Copywriting',
     title: 'Palavras que despertam',
-    description: 'Copy que não informa — movimenta. Texto construído para acelerar a decisão do seu cliente.',
+    description: 'Copy que não informa. Movimenta. Texto construído para acelerar a decisão do seu cliente.',
     icon: '◐',
   },
 ]
@@ -56,7 +56,7 @@ export default function Features() {
             Cinco frentes. Uma estratégia. Um resultado.
           </h2>
           <p className="text-lg leading-relaxed" style={{ color: 'var(--content-default)' }}>
-            Do branding ao tráfego pago — cada serviço é uma alavanca de crescimento dentro de uma estratégia integrada.
+            Do branding ao tráfego pago, cada serviço é uma alavanca de crescimento dentro de uma estratégia integrada.
           </p>
         </div>
 

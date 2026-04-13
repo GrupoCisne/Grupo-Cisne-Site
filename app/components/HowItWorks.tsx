@@ -9,7 +9,7 @@ const steps = [
     number: '02',
     title: 'O Plano',
     subtitle: 'Strategy',
-    description: 'Definimos exatamente onde investir — e onde não investir. Canais, tom de voz e cronograma com intenção de retorno, sem achismo.',
+    description: 'Definimos exatamente onde investir e onde não investir. Canais, tom de voz e cronograma com intenção de retorno, sem achismo.',
   },
   {
     number: '03',
@@ -21,7 +21,7 @@ const steps = [
     number: '04',
     title: 'O Voo',
     subtitle: 'Launch & Scale',
-    description: 'Lançamento com dados, não com sorte. O tráfego é ativado e cada semana retroalimenta a estratégia — porque resultado não é evento, é processo.',
+    description: 'Lançamento com dados, não com sorte. O tráfego é ativado e cada semana retroalimenta a estratégia. Resultado não é evento, é processo.',
   },
 ]
 

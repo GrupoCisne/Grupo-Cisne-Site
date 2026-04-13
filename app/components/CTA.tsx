@@ -56,7 +56,7 @@ export default function CTA() {
               </p>
               <div className="flex flex-col gap-4">
                 {[
-                  'Discovery gratuito — sem enrolação, sem compromisso',
+                  'Discovery gratuito, sem enrolação e sem compromisso',
                   'Diagnóstico honesto de onde o seu marketing está perdendo dinheiro',
                   'Proposta personalizada com estratégia e ROI estimado',
                 ].map((item) => (
