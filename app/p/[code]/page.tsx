@@ -26,7 +26,7 @@ export default function PropostaPage() {
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [step, setStep] = useState<'view' | 'form' | 'done' | 'rejected'>('view')
-  const [form, setForm] = useState({ name: '', company: '', email: '' })
+  const [form, setForm] = useState({ name: '', company: '', email: '', whatsapp: '' })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -204,6 +204,7 @@ export default function PropostaPage() {
               <input style={input} placeholder="Nome completo *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
               <input style={input} placeholder="Empresa" value={form.company} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} />
               <input style={input} placeholder="E-mail" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+              <input style={input} placeholder="WhatsApp (ex: 71999998888)" type="tel" value={form.whatsapp} onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))} />
             </div>
             {error && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 12 }}>⚠ {error}</p>}
             <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
