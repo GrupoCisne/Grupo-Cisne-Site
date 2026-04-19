@@ -5,12 +5,18 @@ import { useParams } from 'next/navigation'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? ''
 
+// ─── Service badge colors (fora do design system de propósito — identidade visual das categorias)
 const SERVICE_COLORS: Record<string, string> = {
-  'Social Media': '#EC4899', 'Tráfego Pago': '#F97316', 'Web Design': '#3B82F6',
-  'Branding': '#A78BFA', 'Designer': '#22D3EE', 'Copywriter': '#F59E0B',
-  'SEO': '#22C55E', 'E-mail Marketing': '#E879F9',
+  'Social Media':    '#EC4899',
+  'Tráfego Pago':    '#F97316',
+  'Web Design':      '#3B82F6',
+  'Branding':        '#A78BFA',
+  'Designer':        '#22D3EE',
+  'Copywriter':      '#F59E0B',
+  'SEO':             '#22C55E',
+  'E-mail Marketing':'#E879F9',
 }
-const svcColor = (name: string) => SERVICE_COLORS[name] ?? '#94A3B8'
+const svcColor = (name: string) => SERVICE_COLORS[name] ?? 'var(--content-subtle)'
 const fmt = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
 interface ServiceItem { id: string; name: string; duration: number; description: string }
@@ -20,21 +26,46 @@ interface Proposal {
   totalValue: number; status: string; createdAt: string
 }
 
+// ─── Logo ─────────────────────────────────────────────────────────────────────
+function Logo() {
+  return (
+    <span className="font-urbanist text-lg font-semibold tracking-tight" style={{ fontFamily: 'var(--font-urbanist)' }}>
+      <span style={{ color: 'var(--content-strong)' }}>Grupo </span>
+      <span style={{ color: 'var(--interactive-pressed)' }}>Cisne</span>
+    </span>
+  )
+}
+
+// ─── Input style (reutilizado no form) ────────────────────────────────────────
+const inputCls: React.CSSProperties = {
+  width: '100%',
+  background: 'var(--surface-overlay)',
+  border: '1px solid var(--border-default)',
+  color: 'var(--content-strong)',
+  borderRadius: 12,
+  padding: '10px 16px',
+  fontSize: 14,
+  outline: 'none',
+  boxSizing: 'border-box',
+  fontFamily: 'var(--font-inter, sans-serif)',
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function PropostaPage() {
   const { code } = useParams<{ code: string }>()
   const [proposal, setProposal] = useState<Proposal | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading]   = useState(true)
   const [notFound, setNotFound] = useState(false)
-  const [step, setStep] = useState<'view' | 'form' | 'done' | 'rejected'>('view')
-  const [form, setForm] = useState({ name: '', company: '', email: '', whatsapp: '' })
+  const [step, setStep]         = useState<'view' | 'form' | 'done' | 'rejected'>('view')
+  const [form, setForm]         = useState({ name: '', company: '', email: '', whatsapp: '' })
   const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError]       = useState('')
 
   useEffect(() => {
     if (!code) { setNotFound(true); setLoading(false); return }
     fetch(`${API}/api/proposals/view/${code}`)
       .then(r => r.ok ? r.json() : Promise.reject())
-      .then(data => {
+      .then((data: Proposal) => {
         setProposal(data)
         if (data.status === 'approved') setStep('done')
         if (data.status === 'rejected') setStep('rejected')
@@ -72,159 +103,227 @@ export default function PropostaPage() {
     }
   }
 
-  const bg = '#080B10'
-  const input: React.CSSProperties = {
-    width: '100%', background: '#111620', border: '1px solid rgba(255,255,255,0.08)',
-    color: '#F1F5F9', borderRadius: 12, padding: '10px 16px', fontSize: 14, outline: 'none',
-    boxSizing: 'border-box',
-  }
-
+  // ── Loading ──────────────────────────────────────────────────────────────
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: bg }}>
-      <div style={{ width: 32, height: 32, border: '3px solid #3B82F6', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+    <div className="min-h-screen flex items-center justify-center bg-surface-page">
+      <div className="w-8 h-8 rounded-full border-2 border-interactive-default border-t-transparent animate-spin" />
     </div>
   )
 
+  // ── Not found ────────────────────────────────────────────────────────────
   if (notFound || !proposal) return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: bg, padding: 24 }}>
-      <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
-      <h1 style={{ color: '#F1F5F9', fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Proposta não encontrada</h1>
-      <p style={{ color: '#475569', fontSize: 14, textAlign: 'center' }}>Verifique o link ou entre em contato com a agência.</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-surface-page px-6 gap-4">
+      <span className="text-5xl">🔍</span>
+      <h1 className="font-urbanist text-xl font-semibold text-content-strong" style={{ fontFamily: 'var(--font-urbanist)' }}>
+        Proposta não encontrada
+      </h1>
+      <p className="text-content-subtle text-sm text-center">
+        Verifique o link ou entre em contato com a agência.
+      </p>
     </div>
   )
 
+  // ── Done ─────────────────────────────────────────────────────────────────
   if (step === 'done') return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: bg, padding: 24 }}>
-      <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(34,197,94,0.15)', border: '2px solid rgba(34,197,94,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, fontSize: 36 }}>✅</div>
-      <h1 style={{ color: '#F1F5F9', fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Proposta aprovada!</h1>
-      <p style={{ color: '#94A3B8', fontSize: 14, textAlign: 'center', maxWidth: 320, lineHeight: 1.6 }}>Obrigado! Em breve nossa equipe entrará em contato para os próximos passos.</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-surface-page px-6 gap-6">
+      <div className="w-20 h-20 rounded-full flex items-center justify-center text-4xl" style={{ background: 'rgba(34,197,94,0.12)', border: '1.5px solid rgba(34,197,94,0.35)' }}>
+        ✅
+      </div>
+      <div className="text-center">
+        <h1 className="font-urbanist text-2xl font-semibold text-content-strong mb-2" style={{ fontFamily: 'var(--font-urbanist)' }}>
+          Proposta aprovada!
+        </h1>
+        <p className="text-content-default text-sm max-w-xs leading-relaxed">
+          Obrigado! Em breve nossa equipe entrará em contato para os próximos passos.
+        </p>
+      </div>
     </div>
   )
 
+  // ── Rejected ─────────────────────────────────────────────────────────────
   if (step === 'rejected') return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: bg, padding: 24 }}>
-      <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(239,68,68,0.1)', border: '2px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, fontSize: 36 }}>❌</div>
-      <h1 style={{ color: '#F1F5F9', fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Proposta recusada</h1>
-      <p style={{ color: '#94A3B8', fontSize: 14, textAlign: 'center' }}>Se mudar de ideia, entre em contato com a Grupo Cisne.</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-surface-page px-6 gap-6">
+      <div className="w-20 h-20 rounded-full flex items-center justify-center text-4xl" style={{ background: 'rgba(239,68,68,0.08)', border: '1.5px solid rgba(239,68,68,0.25)' }}>
+        ❌
+      </div>
+      <div className="text-center">
+        <h1 className="font-urbanist text-2xl font-semibold text-content-strong mb-2" style={{ fontFamily: 'var(--font-urbanist)' }}>
+          Proposta recusada
+        </h1>
+        <p className="text-content-subtle text-sm text-center">
+          Se mudar de ideia, entre em contato com a Grupo Cisne.
+        </p>
+      </div>
     </div>
   )
 
-  const subtotal = proposal.totalValue ?? 0
-  const pixDiscount = subtotal * 0.05
-  const pixTotal = subtotal - pixDiscount
+  // ── Main view ────────────────────────────────────────────────────────────
+  const subtotal        = proposal.totalValue ?? 0
+  const pixDiscount     = subtotal * 0.05
+  const pixTotal        = subtotal - pixDiscount
   const installmentValue = subtotal / (proposal.installments || 1)
-  const today = new Date(proposal.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
+  const dateStr = new Date(proposal.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
 
   return (
-    <div style={{ minHeight: '100vh', background: bg, fontFamily: 'system-ui, sans-serif' }}>
-      {/* Top bar */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', background: 'rgba(13,17,23,0.85)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 8, background: '#3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>🦢</div>
-          <div>
-            <p style={{ color: '#F1F5F9', fontSize: 12, fontWeight: 700, margin: 0 }}>Grupo Cisne</p>
-            <p style={{ color: '#475569', fontSize: 10, margin: 0 }}>Agência Digital</p>
-          </div>
-        </div>
-        <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 20, background: 'rgba(245,158,11,0.12)', color: '#F59E0B', border: '1px solid rgba(245,158,11,0.25)', fontWeight: 600 }}>
-          Aguardando aprovação
-        </span>
-      </div>
+    <div className="min-h-screen bg-surface-page">
 
-      <div style={{ maxWidth: 640, margin: '0 auto', padding: '32px 16px 160px' }}>
-        {/* Header */}
-        <div style={{ marginBottom: 32 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#3B82F6', marginBottom: 8 }}>
+      {/* ── Header ── */}
+      <header className="sticky top-0 z-50 glass-strong" style={{ borderRadius: 0 }}>
+        <div className="max-w-2xl mx-auto px-5 h-14 flex items-center justify-between">
+          <Logo />
+          <span className="text-[11px] font-semibold px-3 py-1 rounded-full" style={{
+            background: 'rgba(245,158,11,0.10)',
+            color: '#F59E0B',
+            border: '1px solid rgba(245,158,11,0.22)',
+          }}>
+            Aguardando aprovação
+          </span>
+        </div>
+      </header>
+
+      {/* ── Content ── */}
+      <main className="max-w-2xl mx-auto px-5 pt-10 pb-40">
+
+        {/* Greeting */}
+        <section className="mb-10">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--interactive-default)' }}>
             Proposta Comercial · {proposal.code}
           </p>
-          <h1 style={{ fontSize: 28, fontWeight: 800, color: '#F1F5F9', margin: '0 0 8px' }}>
+          <h1 className="font-urbanist text-3xl font-semibold text-content-strong mb-2 tracking-tight" style={{ fontFamily: 'var(--font-urbanist)' }}>
             {proposal.clientName ? `Olá, ${proposal.clientName}!` : 'Sua Proposta'}
           </h1>
-          <p style={{ color: '#94A3B8', fontSize: 14, margin: 0 }}>Preparamos esta proposta especialmente para você.</p>
-          <p style={{ color: '#475569', fontSize: 12, marginTop: 6 }}>Emitida em {today}</p>
-        </div>
+          <p className="text-content-default text-sm">Preparamos esta proposta especialmente para você.</p>
+          <p className="text-content-subtle text-xs mt-1">Emitida em {dateStr}</p>
+        </section>
 
         {/* Services */}
-        <div style={{ marginBottom: 24 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#475569', marginBottom: 16 }}>Serviços inclusos</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <section className="mb-8">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-content-subtle mb-4">
+            Serviços inclusos
+          </p>
+          <div className="flex flex-col gap-3">
             {proposal.services.map(svc => {
               const color = svcColor(svc.name)
               return (
-                <div key={svc.id} style={{ borderRadius: 16, padding: 20, background: '#0D1117', border: `1px solid ${color}28` }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: svc.description ? 10 : 0, flexWrap: 'wrap' as const }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 8, background: `${color}18`, color }}>{svc.name}</span>
+                <div key={svc.id} className="glass-card px-5 py-4" style={{ borderColor: `${color}22`, borderRadius: 16 }}>
+                  <div className="flex items-center gap-2 flex-wrap mb-2">
+                    <span className="text-xs font-semibold px-3 py-1 rounded-lg" style={{ background: `${color}18`, color }}>
+                      {svc.name}
+                    </span>
                     {svc.duration > 0 && (
-                      <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'rgba(255,255,255,0.04)', color: '#475569' }}>
+                      <span className="text-[11px] px-2 py-0.5 rounded-md text-content-subtle" style={{ background: 'var(--surface-overlay)' }}>
                         {svc.duration} {svc.duration === 1 ? 'mês' : 'meses'}
                       </span>
                     )}
                   </div>
-                  {svc.description && <p style={{ fontSize: 13, color: '#94A3B8', lineHeight: 1.6, margin: 0 }}>{svc.description}</p>}
+                  {svc.description && (
+                    <p className="text-sm text-content-default leading-relaxed">{svc.description}</p>
+                  )}
                 </div>
               )
             })}
           </div>
-        </div>
+        </section>
 
         {/* General description */}
         {proposal.generalDescription && (
-          <div style={{ marginBottom: 24, borderRadius: 16, padding: 20, background: '#0D1117', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#475569', marginBottom: 8 }}>Observações</p>
-            <p style={{ fontSize: 13, color: '#94A3B8', lineHeight: 1.7, margin: 0 }}>{proposal.generalDescription}</p>
-          </div>
+          <section className="mb-8">
+            <div className="glass-card px-5 py-4" style={{ borderRadius: 16 }}>
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-content-subtle mb-2">
+                Observações
+              </p>
+              <p className="text-sm text-content-default leading-relaxed">{proposal.generalDescription}</p>
+            </div>
+          </section>
         )}
 
         {/* Payment */}
-        <div style={{ marginBottom: 32 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#475569', marginBottom: 16 }}>Condições de pagamento</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div style={{ borderRadius: 16, padding: 20, background: '#0D1117', border: '1.5px solid rgba(34,197,94,0.3)' }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: '#22C55E', margin: '0 0 4px' }}>PIX · À vista</p>
-              <p style={{ fontSize: 11, color: '#475569', margin: '0 0 12px' }}>5% de desconto</p>
-              <p style={{ fontSize: 24, fontWeight: 900, color: '#22C55E', margin: '0 0 4px' }}>{fmt(pixTotal)}</p>
-              <p style={{ fontSize: 11, color: '#475569', margin: 0 }}>Economia de {fmt(pixDiscount)}</p>
+        <section className="mb-10">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-content-subtle mb-4">
+            Condições de pagamento
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {/* PIX */}
+            <div className="glass-card px-5 py-5" style={{ borderColor: 'rgba(34,197,94,0.30)', borderRadius: 16 }}>
+              <p className="text-xs font-semibold mb-1" style={{ color: '#22C55E' }}>PIX · À vista</p>
+              <p className="text-[11px] text-content-subtle mb-3">5% de desconto</p>
+              <p className="font-urbanist text-2xl font-semibold mb-1" style={{ fontFamily: 'var(--font-urbanist)', color: '#22C55E' }}>
+                {fmt(pixTotal)}
+              </p>
+              <p className="text-[11px] text-content-subtle">Economia de {fmt(pixDiscount)}</p>
             </div>
-            <div style={{ borderRadius: 16, padding: 20, background: '#0D1117', border: '1.5px solid rgba(59,130,246,0.3)' }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: '#3B82F6', margin: '0 0 4px' }}>Cartão · {proposal.installments}x</p>
-              <p style={{ fontSize: 11, color: '#475569', margin: '0 0 12px' }}>Sem juros</p>
-              <p style={{ fontSize: 24, fontWeight: 900, color: '#3B82F6', margin: '0 0 4px' }}>{fmt(installmentValue)}<span style={{ fontSize: 12, fontWeight: 500 }}>/mês</span></p>
-              <p style={{ fontSize: 11, color: '#475569', margin: 0 }}>Total: {fmt(subtotal)}</p>
+            {/* Cartão */}
+            <div className="glass-card px-5 py-5" style={{ borderColor: 'rgba(58,136,196,0.30)', borderRadius: 16 }}>
+              <p className="text-xs font-semibold mb-1" style={{ color: 'var(--interactive-hover)' }}>
+                Cartão · {proposal.installments}x
+              </p>
+              <p className="text-[11px] text-content-subtle mb-3">Sem juros</p>
+              <p className="font-urbanist text-2xl font-semibold mb-1" style={{ fontFamily: 'var(--font-urbanist)', color: 'var(--interactive-hover)' }}>
+                {fmt(installmentValue)}<span className="text-xs font-normal">/mês</span>
+              </p>
+              <p className="text-[11px] text-content-subtle">Total: {fmt(subtotal)}</p>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Form */}
+        {/* Approval form */}
         {step === 'form' && (
-          <div style={{ borderRadius: 16, padding: 24, background: '#0D1117', border: '1px solid rgba(59,130,246,0.25)', marginBottom: 16 }}>
-            <p style={{ fontSize: 15, fontWeight: 700, color: '#F1F5F9', margin: '0 0 4px' }}>Confirmar aprovação</p>
-            <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 20px' }}>Preencha seus dados para confirmar.</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <input style={input} placeholder="Nome completo *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
-              <input style={input} placeholder="Empresa" value={form.company} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} />
-              <input style={input} placeholder="E-mail" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
-              <input style={input} placeholder="WhatsApp (ex: 71999998888)" type="tel" value={form.whatsapp} onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))} />
+          <section className="glass-card px-6 py-6 mb-4" style={{ borderColor: 'var(--border-strong)', borderRadius: 20 }}>
+            <h2 className="font-urbanist font-semibold text-content-strong mb-1" style={{ fontFamily: 'var(--font-urbanist)', fontSize: 16 }}>
+              Confirmar aprovação
+            </h2>
+            <p className="text-content-subtle text-sm mb-5">Preencha seus dados para confirmar.</p>
+            <div className="flex flex-col gap-3">
+              <input style={inputCls} placeholder="Nome completo *"
+                value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+              <input style={inputCls} placeholder="Empresa"
+                value={form.company} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} />
+              <input style={inputCls} placeholder="E-mail" type="email"
+                value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+              <input style={inputCls} placeholder="WhatsApp (ex: 71999998888)" type="tel"
+                value={form.whatsapp} onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))} />
             </div>
-            {error && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 12 }}>⚠ {error}</p>}
-            <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
-              <button onClick={() => { setStep('view'); setError('') }} style={{ flex: 1, padding: '12px', borderRadius: 12, background: 'rgba(255,255,255,0.04)', color: '#94A3B8', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', fontSize: 14, fontWeight: 600 }}>Voltar</button>
-              <button onClick={handleApprove} disabled={submitting} style={{ flex: 2, padding: '12px', borderRadius: 12, background: 'linear-gradient(135deg,#22C55E,#16a34a)', color: '#fff', border: 'none', cursor: submitting ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 700 }}>
+            {error && (
+              <p className="text-xs mt-3" style={{ color: '#EF4444' }}>⚠ {error}</p>
+            )}
+            <div className="flex gap-3 mt-5">
+              <button
+                onClick={() => { setStep('view'); setError('') }}
+                className="flex-1 py-3 rounded-xl text-sm font-semibold text-content-default transition-colors"
+                style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border-default)' }}
+              >
+                Voltar
+              </button>
+              <button
+                onClick={handleApprove}
+                disabled={submitting}
+                className="flex-[2] py-3 rounded-xl text-sm font-semibold text-white transition-opacity"
+                style={{ background: 'linear-gradient(135deg,#22C55E,#16a34a)', opacity: submitting ? 0.7 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}
+              >
                 {submitting ? 'Confirmando…' : '✓ Confirmar aprovação'}
               </button>
             </div>
-          </div>
+          </section>
         )}
-      </div>
+      </main>
 
-      {/* Sticky CTA */}
+      {/* ── Sticky bottom bar ── */}
       {step === 'view' && (
-        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px', background: 'linear-gradient(to top, #080B10 60%, transparent)', zIndex: 20 }}>
-          <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', gap: 12 }}>
-            <button onClick={handleReject} disabled={submitting} style={{ padding: '14px 20px', borderRadius: 16, background: 'rgba(239,68,68,0.08)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)', cursor: 'pointer', fontSize: 14, fontWeight: 600, minWidth: 110 }}>
+        <div className="fixed bottom-0 left-0 right-0 z-50" style={{ background: 'linear-gradient(to top, var(--surface-page) 65%, transparent)', padding: '20px 16px 24px' }}>
+          <div className="max-w-2xl mx-auto flex gap-3">
+            <button
+              onClick={handleReject}
+              disabled={submitting}
+              className="px-5 py-3.5 rounded-2xl text-sm font-semibold transition-colors"
+              style={{ background: 'rgba(239,68,68,0.07)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.20)', minWidth: 110, cursor: 'pointer' }}
+            >
               ✕ Recusar
             </button>
-            <button onClick={() => setStep('form')} style={{ flex: 1, padding: '14px', borderRadius: 16, background: 'linear-gradient(135deg,#22C55E,#16a34a)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 700, boxShadow: '0 0 32px rgba(34,197,94,0.3)' }}>
+            <button
+              onClick={() => setStep('form')}
+              className="flex-1 py-3.5 rounded-2xl text-sm font-semibold text-white"
+              style={{ background: 'linear-gradient(135deg,#22C55E,#16a34a)', boxShadow: '0 0 28px rgba(34,197,94,0.25)', cursor: 'pointer' }}
+            >
               ✓ Aprovar proposta →
             </button>
           </div>
