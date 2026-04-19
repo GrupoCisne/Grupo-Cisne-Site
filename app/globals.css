@@ -127,6 +127,11 @@ body {
 .glow-soft { box-shadow: 0 0 40px -10px var(--fx-glow-soft); }
 .glow-mid  { box-shadow: 0 0 60px -15px var(--fx-glow-mid); }
 
+/* ─── SPINNER ─── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ─── MARQUEE ─── */
 @keyframes marquee {
   0%   { transform: translateX(0); }
