@@ -3,689 +3,232 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-type Service = {
-  id: string
-  name: string
-  duration: number
-  description: string
-}
-
-type Proposal = {
-  id: string
-  code: string
-  clientName: string
-  services: Service[]
-  generalDescription: string
-  paymentMethod: 'pix' | 'credit_card'
-  installments: number
-  totalValue: number
-  status: 'pending' | 'approved' | 'rejected'
-  createdAt: string
-}
-
-type Screen =
-  | 'loading'
-  | 'not_found'
-  | 'view'
-  | 'approval_form'
-  | 'otp'
-  | 'success'
-  | 'rejected'
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-const SERVICE_COLORS: Record<string, string> = {
-  'social media':      '#EC4899',
-  'tráfego pago':      '#F97316',
-  'trafego pago':      '#F97316',
-  'web design':        '#3B82F6',
-  'branding':          '#A78BFA',
-  'designer':          '#22D3EE',
-  'copywriter':        '#F59E0B',
-  'seo':               '#22C55E',
-  'e-mail marketing':  '#E879F9',
-  'email marketing':   '#E879F9',
-}
-
-function getServiceColor(name: string): string {
-  const key = name.toLowerCase()
-  for (const [k, v] of Object.entries(SERVICE_COLORS)) {
-    if (key.includes(k)) return v
-  }
-  return '#3B82F6'
-}
-
-function fmt(value: number) {
-  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
-
 const API = process.env.NEXT_PUBLIC_API_URL ?? ''
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+const SERVICE_COLORS: Record<string, string> = {
+  'Social Media': '#EC4899', 'Tráfego Pago': '#F97316', 'Web Design': '#3B82F6',
+  'Branding': '#A78BFA', 'Designer': '#22D3EE', 'Copywriter': '#F59E0B',
+  'SEO': '#22C55E', 'E-mail Marketing': '#E879F9',
+}
+const svcColor = (name: string) => SERVICE_COLORS[name] ?? '#94A3B8'
+const fmt = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
-function Logo() {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden>
-        <path
-          d="M16 3C10.5 3 5 7 4 13c4-2 8-1 10 3-3 1-6 4-5 8 3-2 7-2 9 1 2-4 1-9-1-13 3 1 6 4 6 8 2-5 1-12-7-17z"
-          fill="#47A1E6"
-        />
-        <path
-          d="M9 24c1 2 4 4 7 4s6-2 7-4c-2-1-5-2-7-1-2-1-5 0-7 1z"
-          fill="#6AAEDE"
-          opacity="0.7"
-        />
-      </svg>
-      <span style={{ fontFamily: 'var(--font-urbanist, sans-serif)', fontWeight: 600, fontSize: 18, color: '#F8FAFC', letterSpacing: '-0.02em' }}>
-        Grupo Cisne
-      </span>
-    </div>
-  )
+interface ServiceItem { id: string; name: string; duration: number; description: string }
+interface Proposal {
+  id: string; code: string; clientName: string; services: ServiceItem[]
+  generalDescription: string; installments: number
+  totalValue: number; status: string; createdAt: string
 }
 
-function Spinner() {
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 80 }}>
-      <div style={{
-        width: 40, height: 40,
-        border: '3px solid rgba(58,136,196,0.2)',
-        borderTopColor: '#47A1E6',
-        borderRadius: '50%',
-        animation: 'spin 0.8s linear infinite',
-      }} />
-    </div>
-  )
-}
-
-// ─── Main Page ────────────────────────────────────────────────────────────────
-
-export default function ProposalPage() {
-  const params = useParams()
-  const code = params.code as string
-
-  const [screen, setScreen]     = useState<Screen>('loading')
+export default function PropostaPage() {
+  const { code } = useParams<{ code: string }>()
   const [proposal, setProposal] = useState<Proposal | null>(null)
-  const [error, setError]       = useState('')
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
+  const [step, setStep] = useState<'view' | 'form' | 'done' | 'rejected'>('view')
+  const [form, setForm] = useState({ name: '', company: '', email: '' })
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  // approval form
-  const [name, setName]       = useState('')
-  const [company, setCompany] = useState('')
-  const [email, setEmail]     = useState('')
-  const [phone, setPhone]     = useState('')
-  const [sending, setSending] = useState(false)
-
-  // otp
-  const [otp, setOtp]           = useState('')
-  const [verifying, setVerify]  = useState(false)
-  const [otpError, setOtpError] = useState('')
-
-  // rejection
-  const [rejecting, setRejecting] = useState(false)
-
-  // ── fetch proposal ──
   useEffect(() => {
-    if (!code) return
+    if (!code) { setNotFound(true); setLoading(false); return }
     fetch(`${API}/api/proposals/view/${code}`)
-      .then(r => {
-        if (r.status === 404) { setScreen('not_found'); return null }
-        if (!r.ok) throw new Error('Erro ao carregar proposta')
-        return r.json()
-      })
-      .then((data: Proposal | null) => {
-        if (!data) return
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(data => {
         setProposal(data)
-        if (data.status === 'approved') setScreen('success')
-        else if (data.status === 'rejected') setScreen('rejected')
-        else setScreen('view')
+        if (data.status === 'approved') setStep('done')
+        if (data.status === 'rejected') setStep('rejected')
       })
-      .catch(() => { setScreen('not_found') })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false))
   }, [code])
 
-  // ── send code (step 3) ──
-  async function handleSendCode(e: React.FormEvent) {
-    e.preventDefault()
-    if (!name.trim() || !phone.trim()) { setError('Nome e WhatsApp são obrigatórios.'); return }
-    setSending(true); setError('')
+  async function handleApprove() {
+    if (!form.name.trim()) { setError('Informe seu nome.'); return }
+    setError(''); setSubmitting(true)
     try {
-      const r = await fetch(`${API}/api/proposals/${code}/send-code`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, company, email, phone }),
-      })
-      if (!r.ok) throw new Error('Não foi possível enviar o código.')
-      setScreen('otp')
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erro ao enviar código.')
-    } finally {
-      setSending(false)
-    }
-  }
-
-  // ── approve with OTP (step 5) ──
-  async function handleApprove(e: React.FormEvent) {
-    e.preventDefault()
-    if (otp.length !== 6) { setOtpError('Digite o código de 6 dígitos.'); return }
-    setVerify(true); setOtpError('')
-    try {
-      const r = await fetch(`${API}/api/proposals/${code}/approve`, {
+      const res = await fetch(`${API}/api/proposals/${code}/approve-direct`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ verificationCode: otp }),
+        body: JSON.stringify(form),
       })
-      if (r.status === 400) { setOtpError('Código inválido ou expirado.'); return }
-      if (!r.ok) throw new Error('Erro ao aprovar.')
-      setScreen('success')
-    } catch (err: unknown) {
-      setOtpError(err instanceof Error ? err.message : 'Erro ao aprovar.')
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setStep('done')
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Erro ao aprovar. Tente novamente.')
     } finally {
-      setVerify(false)
+      setSubmitting(false)
     }
   }
 
-  // ── reject ──
   async function handleReject() {
-    if (!confirm('Tem certeza que deseja recusar esta proposta?')) return
-    setRejecting(true)
+    setSubmitting(true)
     try {
       await fetch(`${API}/api/proposals/${code}/reject`, { method: 'PUT' })
-      setScreen('rejected')
-    } catch {
-      alert('Erro ao recusar. Tente novamente.')
+      setStep('rejected')
     } finally {
-      setRejecting(false)
+      setSubmitting(false)
     }
   }
 
-  // ── computed values ──
-  const pix          = proposal ? proposal.totalValue * 0.95 : 0
-  const pixDiscount  = proposal ? proposal.totalValue * 0.05 : 0
-  const installment  = proposal ? proposal.totalValue / (proposal.installments || 1) : 0
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // Render helpers
-  // ─────────────────────────────────────────────────────────────────────────
-
-  function renderLoading() {
-    return (
-      <main style={s.page}>
-        <header style={s.header}><div style={s.headerInner}><Logo /></div></header>
-        <div style={s.center}><Spinner /></div>
-      </main>
-    )
+  const bg = '#080B10'
+  const input: React.CSSProperties = {
+    width: '100%', background: '#111620', border: '1px solid rgba(255,255,255,0.08)',
+    color: '#F1F5F9', borderRadius: 12, padding: '10px 16px', fontSize: 14, outline: 'none',
+    boxSizing: 'border-box',
   }
 
-  function renderNotFound() {
-    return (
-      <main style={s.page}>
-        <header style={s.header}><div style={s.headerInner}><Logo /></div></header>
-        <div style={s.center}>
-          <div style={s.card}>
-            <p style={{ fontSize: 48, marginBottom: 16 }}>🔍</p>
-            <h2 style={s.h2}>Proposta não encontrada</h2>
-            <p style={s.muted}>Verifique o link ou entre em contato com a agência.</p>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  function renderSuccess() {
-    return (
-      <main style={s.page}>
-        <header style={s.header}><div style={s.headerInner}><Logo /></div></header>
-        <div style={s.center}>
-          <div style={s.card}>
-            <div style={{ fontSize: 56, marginBottom: 16 }}>✅</div>
-            <h2 style={{ ...s.h2, color: '#22C55E' }}>Proposta Aprovada!</h2>
-            <p style={s.muted}>
-              Obrigado, <strong style={{ color: '#F8FAFC' }}>{proposal?.clientName}</strong>.
-              Nossa equipe entrará em contato em breve para dar início ao seu projeto.
-            </p>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  function renderRejected() {
-    return (
-      <main style={s.page}>
-        <header style={s.header}><div style={s.headerInner}><Logo /></div></header>
-        <div style={s.center}>
-          <div style={s.card}>
-            <div style={{ fontSize: 56, marginBottom: 16 }}>❌</div>
-            <h2 style={{ ...s.h2, color: '#EF4444' }}>Proposta Recusada</h2>
-            <p style={s.muted}>
-              Proposta recusada. Se mudar de ideia ou quiser conversar, entre em contato conosco.
-            </p>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  function renderApprovalForm() {
-    return (
-      <main style={s.page}>
-        <header style={s.header}><div style={s.headerInner}><Logo /></div></header>
-        <div style={{ ...s.center, paddingBottom: 32 }}>
-          <div style={{ ...s.card, maxWidth: 440 }}>
-            <h2 style={s.h2}>Confirmar aprovação</h2>
-            <p style={{ ...s.muted, marginBottom: 24 }}>
-              Preencha seus dados para receber o código de confirmação via WhatsApp.
-            </p>
-            <form onSubmit={handleSendCode} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <Field label="Nome completo *" value={name} onChange={setName} placeholder="Seu nome" />
-              <Field label="Empresa" value={company} onChange={setCompany} placeholder="Nome da empresa (opcional)" />
-              <Field label="E-mail" value={email} onChange={setEmail} placeholder="seu@email.com (opcional)" type="email" />
-              <Field label="WhatsApp *" value={phone} onChange={setPhone} placeholder="+55 (11) 99999-9999" type="tel" />
-              {error && <p style={{ color: '#EF4444', fontSize: 13 }}>{error}</p>}
-              <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-                <button type="button" onClick={() => setScreen('view')} style={s.btnSecondary}>
-                  Voltar
-                </button>
-                <button type="submit" disabled={sending} style={s.btnPrimary}>
-                  {sending ? 'Enviando…' : 'Enviar código'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  function renderOtp() {
-    return (
-      <main style={s.page}>
-        <header style={s.header}><div style={s.headerInner}><Logo /></div></header>
-        <div style={s.center}>
-          <div style={{ ...s.card, maxWidth: 400, textAlign: 'center' }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>💬</div>
-            <h2 style={s.h2}>Código de verificação</h2>
-            <p style={{ ...s.muted, marginBottom: 24 }}>
-              Enviamos um código de 6 dígitos para o seu WhatsApp.
-            </p>
-            <form onSubmit={handleApprove} style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'center' }}>
-              <input
-                type="text"
-                inputMode="numeric"
-                maxLength={6}
-                value={otp}
-                onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
-                placeholder="000000"
-                style={{
-                  ...s.input,
-                  textAlign: 'center',
-                  fontSize: 28,
-                  letterSpacing: 12,
-                  width: '100%',
-                  maxWidth: 220,
-                }}
-              />
-              {otpError && <p style={{ color: '#EF4444', fontSize: 13 }}>{otpError}</p>}
-              <div style={{ display: 'flex', gap: 10, width: '100%', justifyContent: 'center' }}>
-                <button type="button" onClick={() => setScreen('approval_form')} style={s.btnSecondary}>
-                  Voltar
-                </button>
-                <button type="submit" disabled={verifying} style={s.btnGreen}>
-                  {verifying ? 'Verificando…' : 'Confirmar'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  function renderView() {
-    if (!proposal) return null
-    const dateStr = new Date(proposal.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
-
-    return (
-      <main style={s.page}>
-        <header style={s.header}>
-          <div style={s.headerInner}>
-            <Logo />
-            <span style={{ fontSize: 12, color: '#7D8FA9', fontFamily: 'var(--font-inter, sans-serif)' }}>
-              #{proposal.code} · {dateStr}
-            </span>
-          </div>
-        </header>
-
-        <div style={s.content}>
-          {/* Greeting */}
-          <section style={{ marginBottom: 32 }}>
-            <p style={{ color: '#7D8FA9', fontSize: 14, fontFamily: 'var(--font-inter, sans-serif)', marginBottom: 6 }}>
-              Proposta comercial para
-            </p>
-            <h1 style={{ ...s.h1, marginBottom: 8 }}>{proposal.clientName}</h1>
-            {proposal.generalDescription && (
-              <p style={{ color: '#B1C0D0', fontSize: 15, lineHeight: 1.6, fontFamily: 'var(--font-inter, sans-serif)', maxWidth: 640 }}>
-                {proposal.generalDescription}
-              </p>
-            )}
-          </section>
-
-          {/* Services */}
-          <section style={{ marginBottom: 32 }}>
-            <h2 style={{ ...s.h2, marginBottom: 16 }}>Serviços incluídos</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {proposal.services.map(svc => {
-                const color = getServiceColor(svc.name)
-                return (
-                  <div key={svc.id} style={s.serviceCard}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-                      <div style={{ width: 4, borderRadius: 2, background: color, alignSelf: 'stretch', flexShrink: 0 }} />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>
-                          <span style={{ fontFamily: 'var(--font-urbanist, sans-serif)', fontWeight: 600, fontSize: 16, color: '#F8FAFC' }}>
-                            {svc.name}
-                          </span>
-                          <span style={{ ...s.badge, background: color + '22', color }}>
-                            {svc.duration} {svc.duration === 1 ? 'mês' : 'meses'}
-                          </span>
-                        </div>
-                        {svc.description && (
-                          <p style={{ color: '#B1C0D0', fontSize: 14, lineHeight: 1.55, fontFamily: 'var(--font-inter, sans-serif)', margin: 0 }}>
-                            {svc.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-
-          {/* Payment */}
-          <section style={{ marginBottom: 120 }}>
-            <h2 style={{ ...s.h2, marginBottom: 16 }}>Condições de pagamento</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-              {/* PIX */}
-              <div style={{ ...s.payCard, border: proposal.paymentMethod === 'pix' ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(148,163,184,0.12)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                  <span style={{ fontSize: 22 }}>⚡</span>
-                  <span style={{ fontFamily: 'var(--font-urbanist, sans-serif)', fontWeight: 600, color: '#F8FAFC', fontSize: 16 }}>PIX à vista</span>
-                  {proposal.paymentMethod === 'pix' && (
-                    <span style={{ ...s.badge, background: 'rgba(34,197,94,0.15)', color: '#22C55E', marginLeft: 'auto' }}>Recomendado</span>
-                  )}
-                </div>
-                <p style={{ fontSize: 28, fontFamily: 'var(--font-urbanist, sans-serif)', fontWeight: 600, color: '#22C55E', marginBottom: 4 }}>
-                  {fmt(pix)}
-                </p>
-                <p style={{ fontSize: 13, color: '#7D8FA9', fontFamily: 'var(--font-inter, sans-serif)' }}>
-                  {fmt(pixDiscount)} de desconto (5%)
-                </p>
-              </div>
-
-              {/* Card */}
-              <div style={{ ...s.payCard, border: proposal.paymentMethod === 'credit_card' ? '1px solid rgba(99,102,241,0.4)' : '1px solid rgba(148,163,184,0.12)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                  <span style={{ fontSize: 22 }}>💳</span>
-                  <span style={{ fontFamily: 'var(--font-urbanist, sans-serif)', fontWeight: 600, color: '#F8FAFC', fontSize: 16 }}>Cartão parcelado</span>
-                  {proposal.paymentMethod === 'credit_card' && (
-                    <span style={{ ...s.badge, background: 'rgba(99,102,241,0.15)', color: '#818CF8', marginLeft: 'auto' }}>Recomendado</span>
-                  )}
-                </div>
-                <p style={{ fontSize: 28, fontFamily: 'var(--font-urbanist, sans-serif)', fontWeight: 600, color: '#F8FAFC', marginBottom: 4 }}>
-                  {proposal.installments}× {fmt(installment)}
-                </p>
-                <p style={{ fontSize: 13, color: '#7D8FA9', fontFamily: 'var(--font-inter, sans-serif)' }}>
-                  Total: {fmt(proposal.totalValue)}
-                </p>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        {/* Bottom bar */}
-        <div style={s.bottomBar}>
-          <div style={s.bottomInner}>
-            <button
-              onClick={handleReject}
-              disabled={rejecting}
-              style={s.btnReject}
-            >
-              {rejecting ? 'Aguarde…' : 'Recusar proposta'}
-            </button>
-            <button
-              onClick={() => setScreen('approval_form')}
-              style={s.btnApprove}
-            >
-              Aprovar proposta
-            </button>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  // ─── Router ───────────────────────────────────────────────────────────────
-  switch (screen) {
-    case 'loading':       return renderLoading()
-    case 'not_found':     return renderNotFound()
-    case 'success':       return renderSuccess()
-    case 'rejected':      return renderRejected()
-    case 'approval_form': return renderApprovalForm()
-    case 'otp':           return renderOtp()
-    case 'view':          return renderView()
-  }
-}
-
-// ─── Field helper ─────────────────────────────────────────────────────────────
-
-function Field({ label, value, onChange, placeholder, type = 'text' }: {
-  label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string
-}) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <label style={{ fontSize: 13, color: '#B1C0D0', fontFamily: 'var(--font-inter, sans-serif)', fontWeight: 500 }}>{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder={placeholder}
-        style={s.input}
-      />
+  if (loading) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: bg }}>
+      <div style={{ width: 32, height: 32, border: '3px solid #3B82F6', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   )
-}
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+  if (notFound || !proposal) return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: bg, padding: 24 }}>
+      <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
+      <h1 style={{ color: '#F1F5F9', fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Proposta não encontrada</h1>
+      <p style={{ color: '#475569', fontSize: 14, textAlign: 'center' }}>Verifique o link ou entre em contato com a agência.</p>
+    </div>
+  )
 
-const s = {
-  page: {
-    minHeight: '100vh',
-    background: '#080B10',
-    fontFamily: 'var(--font-inter, sans-serif)',
-  } as React.CSSProperties,
+  if (step === 'done') return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: bg, padding: 24 }}>
+      <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(34,197,94,0.15)', border: '2px solid rgba(34,197,94,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, fontSize: 36 }}>✅</div>
+      <h1 style={{ color: '#F1F5F9', fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Proposta aprovada!</h1>
+      <p style={{ color: '#94A3B8', fontSize: 14, textAlign: 'center', maxWidth: 320, lineHeight: 1.6 }}>Obrigado! Em breve nossa equipe entrará em contato para os próximos passos.</p>
+    </div>
+  )
 
-  header: {
-    position: 'fixed' as const,
-    top: 0, left: 0, right: 0,
-    zIndex: 50,
-    background: 'rgba(8,11,16,0.85)',
-    backdropFilter: 'blur(12px)',
-    borderBottom: '1px solid rgba(148,163,184,0.10)',
-  },
+  if (step === 'rejected') return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: bg, padding: 24 }}>
+      <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(239,68,68,0.1)', border: '2px solid rgba(239,68,68,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, fontSize: 36 }}>❌</div>
+      <h1 style={{ color: '#F1F5F9', fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Proposta recusada</h1>
+      <p style={{ color: '#94A3B8', fontSize: 14, textAlign: 'center' }}>Se mudar de ideia, entre em contato com a Grupo Cisne.</p>
+    </div>
+  )
 
-  headerInner: {
-    maxWidth: 720,
-    margin: '0 auto',
-    padding: '14px 20px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  } as React.CSSProperties,
+  const subtotal = proposal.totalValue ?? 0
+  const pixDiscount = subtotal * 0.05
+  const pixTotal = subtotal - pixDiscount
+  const installmentValue = subtotal / (proposal.installments || 1)
+  const today = new Date(proposal.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
 
-  content: {
-    maxWidth: 720,
-    margin: '0 auto',
-    padding: '96px 20px 0',
-  } as React.CSSProperties,
+  return (
+    <div style={{ minHeight: '100vh', background: bg, fontFamily: 'system-ui, sans-serif' }}>
+      {/* Top bar */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', background: 'rgba(13,17,23,0.85)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 28, height: 28, borderRadius: 8, background: '#3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>🦢</div>
+          <div>
+            <p style={{ color: '#F1F5F9', fontSize: 12, fontWeight: 700, margin: 0 }}>Grupo Cisne</p>
+            <p style={{ color: '#475569', fontSize: 10, margin: 0 }}>Agência Digital</p>
+          </div>
+        </div>
+        <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 20, background: 'rgba(245,158,11,0.12)', color: '#F59E0B', border: '1px solid rgba(245,158,11,0.25)', fontWeight: 600 }}>
+          Aguardando aprovação
+        </span>
+      </div>
 
-  center: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    padding: '100px 20px 40px',
-    minHeight: '100vh',
-  } as React.CSSProperties,
+      <div style={{ maxWidth: 640, margin: '0 auto', padding: '32px 16px 160px' }}>
+        {/* Header */}
+        <div style={{ marginBottom: 32 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#3B82F6', marginBottom: 8 }}>
+            Proposta Comercial · {proposal.code}
+          </p>
+          <h1 style={{ fontSize: 28, fontWeight: 800, color: '#F1F5F9', margin: '0 0 8px' }}>
+            {proposal.clientName ? `Olá, ${proposal.clientName}!` : 'Sua Proposta'}
+          </h1>
+          <p style={{ color: '#94A3B8', fontSize: 14, margin: 0 }}>Preparamos esta proposta especialmente para você.</p>
+          <p style={{ color: '#475569', fontSize: 12, marginTop: 6 }}>Emitida em {today}</p>
+        </div>
 
-  card: {
-    background: '#0C121D',
-    border: '1px solid rgba(148,163,184,0.12)',
-    borderRadius: 16,
-    padding: '32px 28px',
-    width: '100%',
-  } as React.CSSProperties,
+        {/* Services */}
+        <div style={{ marginBottom: 24 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#475569', marginBottom: 16 }}>Serviços inclusos</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {proposal.services.map(svc => {
+              const color = svcColor(svc.name)
+              return (
+                <div key={svc.id} style={{ borderRadius: 16, padding: 20, background: '#0D1117', border: `1px solid ${color}28` }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: svc.description ? 10 : 0, flexWrap: 'wrap' as const }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 8, background: `${color}18`, color }}>{svc.name}</span>
+                    {svc.duration > 0 && (
+                      <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'rgba(255,255,255,0.04)', color: '#475569' }}>
+                        {svc.duration} {svc.duration === 1 ? 'mês' : 'meses'}
+                      </span>
+                    )}
+                  </div>
+                  {svc.description && <p style={{ fontSize: 13, color: '#94A3B8', lineHeight: 1.6, margin: 0 }}>{svc.description}</p>}
+                </div>
+              )
+            })}
+          </div>
+        </div>
 
-  h1: {
-    fontFamily: 'var(--font-urbanist, sans-serif)',
-    fontWeight: 600,
-    fontSize: 30,
-    color: '#F8FAFC',
-    letterSpacing: '-0.02em',
-    margin: 0,
-  } as React.CSSProperties,
+        {/* General description */}
+        {proposal.generalDescription && (
+          <div style={{ marginBottom: 24, borderRadius: 16, padding: 20, background: '#0D1117', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#475569', marginBottom: 8 }}>Observações</p>
+            <p style={{ fontSize: 13, color: '#94A3B8', lineHeight: 1.7, margin: 0 }}>{proposal.generalDescription}</p>
+          </div>
+        )}
 
-  h2: {
-    fontFamily: 'var(--font-urbanist, sans-serif)',
-    fontWeight: 600,
-    fontSize: 20,
-    color: '#F8FAFC',
-    letterSpacing: '-0.01em',
-    margin: 0,
-  } as React.CSSProperties,
+        {/* Payment */}
+        <div style={{ marginBottom: 32 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#475569', marginBottom: 16 }}>Condições de pagamento</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ borderRadius: 16, padding: 20, background: '#0D1117', border: '1.5px solid rgba(34,197,94,0.3)' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: '#22C55E', margin: '0 0 4px' }}>PIX · À vista</p>
+              <p style={{ fontSize: 11, color: '#475569', margin: '0 0 12px' }}>5% de desconto</p>
+              <p style={{ fontSize: 24, fontWeight: 900, color: '#22C55E', margin: '0 0 4px' }}>{fmt(pixTotal)}</p>
+              <p style={{ fontSize: 11, color: '#475569', margin: 0 }}>Economia de {fmt(pixDiscount)}</p>
+            </div>
+            <div style={{ borderRadius: 16, padding: 20, background: '#0D1117', border: '1.5px solid rgba(59,130,246,0.3)' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: '#3B82F6', margin: '0 0 4px' }}>Cartão · {proposal.installments}x</p>
+              <p style={{ fontSize: 11, color: '#475569', margin: '0 0 12px' }}>Sem juros</p>
+              <p style={{ fontSize: 24, fontWeight: 900, color: '#3B82F6', margin: '0 0 4px' }}>{fmt(installmentValue)}<span style={{ fontSize: 12, fontWeight: 500 }}>/mês</span></p>
+              <p style={{ fontSize: 11, color: '#475569', margin: 0 }}>Total: {fmt(subtotal)}</p>
+            </div>
+          </div>
+        </div>
 
-  muted: {
-    color: '#B1C0D0',
-    fontSize: 15,
-    lineHeight: 1.6,
-    fontFamily: 'var(--font-inter, sans-serif)',
-    margin: 0,
-  } as React.CSSProperties,
+        {/* Form */}
+        {step === 'form' && (
+          <div style={{ borderRadius: 16, padding: 24, background: '#0D1117', border: '1px solid rgba(59,130,246,0.25)', marginBottom: 16 }}>
+            <p style={{ fontSize: 15, fontWeight: 700, color: '#F1F5F9', margin: '0 0 4px' }}>Confirmar aprovação</p>
+            <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 20px' }}>Preencha seus dados para confirmar.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <input style={input} placeholder="Nome completo *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+              <input style={input} placeholder="Empresa" value={form.company} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} />
+              <input style={input} placeholder="E-mail" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+            </div>
+            {error && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 12 }}>⚠ {error}</p>}
+            <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
+              <button onClick={() => { setStep('view'); setError('') }} style={{ flex: 1, padding: '12px', borderRadius: 12, background: 'rgba(255,255,255,0.04)', color: '#94A3B8', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', fontSize: 14, fontWeight: 600 }}>Voltar</button>
+              <button onClick={handleApprove} disabled={submitting} style={{ flex: 2, padding: '12px', borderRadius: 12, background: 'linear-gradient(135deg,#22C55E,#16a34a)', color: '#fff', border: 'none', cursor: submitting ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 700 }}>
+                {submitting ? 'Confirmando…' : '✓ Confirmar aprovação'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
-  serviceCard: {
-    background: '#0C121D',
-    border: '1px solid rgba(148,163,184,0.10)',
-    borderRadius: 12,
-    padding: '16px 18px',
-  } as React.CSSProperties,
-
-  payCard: {
-    background: '#0C121D',
-    borderRadius: 12,
-    padding: '20px',
-  } as React.CSSProperties,
-
-  badge: {
-    display: 'inline-block',
-    fontSize: 11,
-    fontWeight: 600,
-    padding: '2px 8px',
-    borderRadius: 999,
-    fontFamily: 'var(--font-inter, sans-serif)',
-    letterSpacing: '0.02em',
-    textTransform: 'uppercase' as const,
-  } as React.CSSProperties,
-
-  input: {
-    background: '#131B2B',
-    border: '1px solid rgba(148,163,184,0.15)',
-    borderRadius: 8,
-    padding: '10px 14px',
-    color: '#F8FAFC',
-    fontSize: 14,
-    fontFamily: 'var(--font-inter, sans-serif)',
-    outline: 'none',
-    width: '100%',
-    boxSizing: 'border-box' as const,
-  } as React.CSSProperties,
-
-  bottomBar: {
-    position: 'fixed' as const,
-    bottom: 0, left: 0, right: 0,
-    background: 'rgba(8,11,16,0.92)',
-    backdropFilter: 'blur(12px)',
-    borderTop: '1px solid rgba(148,163,184,0.10)',
-    zIndex: 50,
-  },
-
-  bottomInner: {
-    maxWidth: 720,
-    margin: '0 auto',
-    padding: '14px 20px',
-    display: 'flex',
-    gap: 12,
-    justifyContent: 'flex-end',
-  } as React.CSSProperties,
-
-  btnPrimary: {
-    flex: 1,
-    background: '#3A88C4',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 8,
-    padding: '10px 20px',
-    fontSize: 14,
-    fontWeight: 600,
-    cursor: 'pointer',
-    fontFamily: 'var(--font-inter, sans-serif)',
-  } as React.CSSProperties,
-
-  btnSecondary: {
-    background: 'transparent',
-    color: '#B1C0D0',
-    border: '1px solid rgba(148,163,184,0.25)',
-    borderRadius: 8,
-    padding: '10px 20px',
-    fontSize: 14,
-    fontWeight: 600,
-    cursor: 'pointer',
-    fontFamily: 'var(--font-inter, sans-serif)',
-  } as React.CSSProperties,
-
-  btnGreen: {
-    flex: 1,
-    background: '#16a34a',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 8,
-    padding: '10px 20px',
-    fontSize: 14,
-    fontWeight: 600,
-    cursor: 'pointer',
-    fontFamily: 'var(--font-inter, sans-serif)',
-  } as React.CSSProperties,
-
-  btnReject: {
-    background: 'transparent',
-    color: '#EF4444',
-    border: '1px solid rgba(239,68,68,0.4)',
-    borderRadius: 8,
-    padding: '12px 24px',
-    fontSize: 14,
-    fontWeight: 600,
-    cursor: 'pointer',
-    fontFamily: 'var(--font-inter, sans-serif)',
-  } as React.CSSProperties,
-
-  btnApprove: {
-    background: '#16a34a',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 8,
-    padding: '12px 28px',
-    fontSize: 14,
-    fontWeight: 600,
-    cursor: 'pointer',
-    fontFamily: 'var(--font-inter, sans-serif)',
-  } as React.CSSProperties,
+      {/* Sticky CTA */}
+      {step === 'view' && (
+        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '16px', background: 'linear-gradient(to top, #080B10 60%, transparent)', zIndex: 20 }}>
+          <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', gap: 12 }}>
+            <button onClick={handleReject} disabled={submitting} style={{ padding: '14px 20px', borderRadius: 16, background: 'rgba(239,68,68,0.08)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)', cursor: 'pointer', fontSize: 14, fontWeight: 600, minWidth: 110 }}>
+              ✕ Recusar
+            </button>
+            <button onClick={() => setStep('form')} style={{ flex: 1, padding: '14px', borderRadius: 16, background: 'linear-gradient(135deg,#22C55E,#16a34a)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 700, boxShadow: '0 0 32px rgba(34,197,94,0.3)' }}>
+              ✓ Aprovar proposta →
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
