@@ -1,0 +1,140 @@
+{
+  "name": "Design System — Grupo Cisne",
+  "version": "1.0.0",
+  "theme": "dark",
+  "fonts": {
+    "urbanist": {
+      "variable": "--font-urbanist",
+      "usage": "headlines, display, h1–h3, logo",
+      "weights": ["400", "500", "600"]
+    },
+    "inter": {
+      "variable": "--font-inter",
+      "usage": "body, labels, navigation",
+      "weights": ["400", "500", "600"]
+    }
+  },
+  "tokens": {
+    "primitive": {
+      "blue": {
+        "--blue-1000": { "hex": "#06090E", "description": "Background da página" },
+        "--blue-900":  { "hex": "#0C121D", "description": "Superfície elevada" },
+        "--blue-800":  { "hex": "#131B2B", "description": "Cards overlay / CTA bg" },
+        "--blue-700":  { "hex": "#1E293B", "description": "Bordas fortes / estado ativo" },
+        "--blue-600":  { "hex": "#334155", "description": "Intermediário" },
+        "--blue-500":  { "hex": "#3A88C4", "description": "Interativo padrão" },
+        "--blue-400":  { "hex": "#47A1E6", "description": "Hover" },
+        "--blue-300":  { "hex": "#6AAEDE", "description": "Pressed / accent principal" },
+        "--blue-200":  { "hex": "#A8CCEC", "description": "Realce claro" },
+        "--blue-100":  { "hex": "#E2F0FD", "description": "Mais claro" }
+      },
+      "neutral": {
+        "--neutral-100": { "hex": "#F8FAFC" },
+        "--neutral-200": { "hex": "#E2E8F0" },
+        "--neutral-300": { "hex": "#CBD5E1" },
+        "--neutral-400": { "hex": "#94A3B8" },
+        "--neutral-500": { "hex": "#B1C0D0" },
+        "--neutral-600": { "hex": "#7D8FA9" }
+      }
+    },
+    "semantic": {
+      "surface": {
+        "--surface-page":    { "value": "var(--blue-1000)", "hex": "#06090E", "description": "Background da página" },
+        "--surface-raised":  { "value": "var(--blue-900)",  "hex": "#0C121D", "description": "Superfície elevada" },
+        "--surface-overlay": { "value": "var(--blue-800)",  "hex": "#131B2B", "description": "Cards overlay" },
+        "--surface-active":  { "value": "var(--blue-700)",  "hex": "#1E293B", "description": "Estado ativo / bordas fortes" }
+      },
+      "content": {
+        "--content-strong":  { "value": "var(--neutral-100)", "hex": "#F8FAFC", "description": "Texto principal" },
+        "--content-default": { "value": "var(--neutral-500)", "hex": "#B1C0D0", "description": "Texto secundário" },
+        "--content-subtle":  { "value": "var(--neutral-600)", "hex": "#7D8FA9", "description": "Texto terciário / labels" }
+      },
+      "interactive": {
+        "--interactive-default": { "value": "var(--blue-500)", "hex": "#3A88C4",              "description": "Estado padrão" },
+        "--interactive-hover":   { "value": "var(--blue-400)", "hex": "#47A1E6",              "description": "Hover" },
+        "--interactive-pressed": { "value": "var(--blue-300)", "hex": "#6AAEDE",              "description": "Pressed / accent" },
+        "--interactive-muted":   { "value": "rgba(58,136,196,0.12)",                          "description": "Background sutil" },
+        "--interactive-glow":    { "value": "rgba(58,136,196,0.30)",                          "description": "Glow effect" }
+      },
+      "border": {
+        "--border-default": { "value": "rgba(148,163,184,0.10)", "description": "Borda padrão" },
+        "--border-strong":  { "value": "rgba(148,163,184,0.20)", "description": "Borda hover" },
+        "--border-active":  { "value": "var(--blue-500)", "hex": "#3A88C4", "description": "Borda ativa" }
+      },
+      "fx": {
+        "--fx-glow-soft": { "value": "rgba(58,136,196,0.15)", "description": "Glow suave" },
+        "--fx-glow-mid":  { "value": "rgba(58,136,196,0.40)", "description": "Glow médio" },
+        "--fx-glow-deep": { "value": "rgba(6,18,29,0.60)",    "description": "Glow profundo / escuro" }
+      }
+    }
+  },
+  "utilityClasses": {
+    ".glass-card": {
+      "description": "Card com backdrop-filter blur(16px), borda sutil e hover elevado",
+      "properties": {
+        "background": "rgba(255,255,255,0.02)",
+        "backdropFilter": "blur(16px)",
+        "border": "1px solid var(--border-default)",
+        "borderRadius": "24px",
+        "transition": "all 0.4s cubic-bezier(0.4,0,0.2,1)"
+      },
+      "hover": {
+        "background": "rgba(255,255,255,0.05)",
+        "borderColor": "var(--border-strong)",
+        "boxShadow": "0 20px 40px rgba(0,0,0,0.4)"
+      }
+    },
+    ".glass-strong": {
+      "description": "Card com backdrop-filter blur(24px) e fundo mais opaco",
+      "properties": {
+        "background": "rgba(12,18,29,0.70)",
+        "backdropFilter": "blur(24px)",
+        "border": "1px solid var(--border-strong)",
+        "borderRadius": "24px"
+      }
+    },
+    ".hero-mesh": {
+      "description": "Radial gradient azul difuso via ::before",
+      "pseudo": {
+        "background": "radial-gradient(circle at center, rgba(58,136,196,0.08) 0%, transparent 70%)",
+        "filter": "blur(100px)"
+      }
+    },
+    ".text-gradient": {
+      "description": "Texto com fade strong → neutral via clip",
+      "properties": {
+        "background": "linear-gradient(135deg, var(--neutral-100) 0%, var(--neutral-400) 100%)",
+        "backgroundClip": "text",
+        "webkitTextFillColor": "transparent"
+      }
+    },
+    ".glow-soft": {
+      "description": "box-shadow azul suave",
+      "properties": { "boxShadow": "0 0 40px -10px var(--fx-glow-soft)" }
+    },
+    ".glow-mid": {
+      "description": "box-shadow azul médio",
+      "properties": { "boxShadow": "0 0 60px -15px var(--fx-glow-mid)" }
+    },
+    ".animate-marquee": {
+      "description": "Carrossel infinito, pausa no hover",
+      "properties": { "animation": "marquee 35s linear infinite" },
+      "hover": { "animationPlayState": "paused" }
+    },
+    ".section-gradient-top": {
+      "description": "Gradient de blue-900 até blue-1000",
+      "properties": { "background": "linear-gradient(to bottom, var(--blue-900), var(--blue-1000))" }
+    },
+    ".section-gradient-alt": {
+      "description": "Background sólido blue-900",
+      "properties": { "backgroundColor": "var(--blue-900)" }
+    }
+  },
+  "layoutPatterns": {
+    "bentoGrid": "Serviços e features",
+    "grid2x2": "Processo / steps",
+    "masonry3col": "Depoimentos",
+    "numericWatermark": "Cards com número gigante em opacidade baixa",
+    "glowBlob": "Glow blob absoluto dentro de cards no hover"
+  }
+}

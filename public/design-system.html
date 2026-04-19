@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Design System — Grupo Cisne</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Urbanist:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue-1000: #06090E;
+      --blue-900:  #0C121D;
+      --blue-800:  #131B2B;
+      --blue-700:  #1E293B;
+      --blue-600:  #334155;
+      --blue-500:  #3A88C4;
+      --blue-400:  #47A1E6;
+      --blue-300:  #6AAEDE;
+      --blue-200:  #A8CCEC;
+      --blue-100:  #E2F0FD;
+
+      --neutral-100: #F8FAFC;
+      --neutral-200: #E2E8F0;
+      --neutral-300: #CBD5E1;
+      --neutral-400: #94A3B8;
+      --neutral-500: #B1C0D0;
+      --neutral-600: #7D8FA9;
+
+      --surface-page:    var(--blue-1000);
+      --surface-raised:  var(--blue-900);
+      --surface-overlay: var(--blue-800);
+      --surface-active:  var(--blue-700);
+
+      --content-strong:  var(--neutral-100);
+      --content-default: var(--neutral-500);
+      --content-subtle:  var(--neutral-600);
+
+      --interactive-default: var(--blue-500);
+      --interactive-hover:   var(--blue-400);
+      --interactive-pressed: var(--blue-300);
+      --interactive-muted:   rgba(58,136,196,0.12);
+      --interactive-glow:    rgba(58,136,196,0.30);
+
+      --border-default: rgba(148,163,184,0.10);
+      --border-strong:  rgba(148,163,184,0.20);
+      --border-active:  var(--blue-500);
+
+      --fx-glow-soft: rgba(58,136,196,0.15);
+      --fx-glow-mid:  rgba(58,136,196,0.40);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--surface-page);
+      color: var(--content-strong);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 80px 0; }
+    .section + .section { border-top: 1px solid var(--border-default); }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 96px 24px 80px;
+      text-align: center;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -10%; left: 50%;
+      transform: translateX(-50%);
+      width: 140%; height: 120%;
+      background: radial-gradient(circle at center, rgba(58,136,196,0.08) 0%, transparent 70%);
+      filter: blur(100px);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; z-index: 1; }
+
+    /* ── Section header ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--interactive-default);
+      margin-bottom: 6px;
+    }
+    .section-title {
+      font-family: 'Urbanist', sans-serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--content-strong);
+      margin-bottom: 32px;
+    }
+    .sub-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--content-subtle);
+      margin-bottom: 16px;
+      margin-top: 32px;
+    }
+
+    /* ── Typography ── */
+    .display {
+      font-family: 'Urbanist', sans-serif;
+      font-size: 56px;
+      font-weight: 600;
+      line-height: 1.1;
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, var(--neutral-100) 0%, var(--neutral-400) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--interactive-default);
+      margin-bottom: 12px;
+    }
+
+    /* ── Glass ── */
+    .glass-card {
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-default);
+      border-radius: 20px;
+      transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+      overflow: hidden;
+    }
+    .glass-card:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: var(--border-strong);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .glass-strong {
+      background: rgba(12,18,29,0.70);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    /* ── Glow ── */
+    .glow-soft { box-shadow: 0 0 40px -10px var(--fx-glow-soft); }
+    .glow-mid  { box-shadow: 0 0 60px -15px var(--fx-glow-mid); }
+
+    /* ── Grids ── */
+    .grid-colors {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+    }
+    .grid-semantic {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .grid-2col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .grid-3col {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── Color swatch ── */
+    .swatch { border-radius: 20px; overflow: hidden; }
+    .swatch-color { height: 56px; width: 100%; }
+    .swatch-info { padding: 10px 12px; }
+    .swatch-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--content-strong);
+      display: block;
+      margin-bottom: 2px;
+    }
+    .swatch-hex {
+      font-size: 11px;
+      font-family: monospace;
+      color: var(--content-subtle);
+    }
+    .swatch-token {
+      font-size: 10px;
+      font-family: monospace;
+      color: var(--interactive-default);
+      margin-top: 3px;
+      display: block;
+    }
+    .swatch-desc {
+      font-size: 11px;
+      color: var(--content-subtle);
+      margin-top: 2px;
+      display: block;
+    }
+
+    /* ── Typography demo card ── */
+    .type-card { padding: 32px; }
+    .type-label {
+      font-size: 11px;
+      color: var(--content-subtle);
+      margin-bottom: 20px;
+    }
+    .type-sample { margin-bottom: 10px; color: var(--content-strong); }
+    .type-sample.muted { color: var(--content-default); }
+
+    /* ── Utility item ── */
+    .util-item { padding: 18px 20px; }
+    .util-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--interactive-pressed);
+      margin-bottom: 4px;
+    }
+    .util-desc { font-size: 12px; color: var(--content-subtle); }
+
+    /* ── Demo cards ── */
+    .demo-card {
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+    .demo-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--content-default);
+    }
+
+    /* ── Buttons ── */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 32px;
+      align-items: center;
+    }
+    .btn {
+      padding: 10px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      border: none;
+      transition: all 0.25s ease;
+    }
+    .btn-primary {
+      background: var(--interactive-default);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--interactive-hover); }
+    .btn-secondary {
+      background: var(--interactive-muted);
+      color: var(--interactive-pressed);
+      border: 1px solid var(--border-strong);
+    }
+    .btn-secondary:hover { border-color: var(--interactive-default); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--content-default);
+      border: 1px solid var(--border-default);
+    }
+    .btn-ghost:hover { border-color: var(--border-strong); }
+    .btn-disabled {
+      background: var(--interactive-default);
+      color: #fff;
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ── Glow demo ── */
+    .glow-demo {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+    }
+    .glow-pill {
+      padding: 8px 20px;
+      border-radius: 12px;
+      background: var(--interactive-muted);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--interactive-pressed);
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--blue-1000); }
+    ::-webkit-scrollbar-thumb { background: var(--blue-700); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--interactive-default); }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border-default);
+      font-size: 13px;
+      color: var(--content-subtle);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Grupo Cisne</p>
+      <h1 class="display text-gradient">Design System</h1>
+      <p style="color:var(--content-default);margin-top:12px;font-size:17px;">
+        Tokens, tipografia e classes utilitárias da IDV dark mode.
+      </p>
+    </div>
+  </header>
+
+  <!-- ── CORES PRIMITIVAS ── -->
+  <section class="section">
+    <div class="container">
+      <p class="section-label">Tokens</p>
+      <h2 class="section-title">Cores Primitivas</h2>
+
+      <p class="sub-header">Escala Blue</p>
+      <div class="grid-colors">
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#06090E"></div>
+          <div class="swatch-info"><span class="swatch-label">blue-1000</span><span class="swatch-hex">#06090E</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#0C121D"></div>
+          <div class="swatch-info"><span class="swatch-label">blue-900</span><span class="swatch-hex">#0C121D</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#131B2B"></div>
+          <div class="swatch-info"><span class="swatch-label">blue-800</span><span class="swatch-hex">#131B2B</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#1E293B"></div>
+          <div class="swatch-info"><span class="swatch-label">blue-700</span><span class="swatch-hex">#1E293B</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#334155"></div>
+          <div class="swatch-info"><span class="swatch-label">blue-600</span><span class="swatch-hex">#334155</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#3A88C4"></div>
+          <div class="swatch-info"><span class="swatch-label">blue-500</span><span class="swatch-hex">#3A88C4</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#47A1E6"></div>
+          <div class="swatch-info"><span class="swatch-label">blue-400</span><span class="swatch-hex">#47A1E6</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#6AAEDE"></div>
+          <div class="swatch-info"><span class="swatch-label">blue-300</span><span class="swatch-hex">#6AAEDE</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#A8CCEC"></div>
+          <div class="swatch-info"><span class="swatch-label">blue-200</span><span class="swatch-hex">#A8CCEC</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#E2F0FD"></div>
+          <div class="swatch-info"><span class="swatch-label">blue-100</span><span class="swatch-hex">#E2F0FD</span></div>
+        </div>
+      </div>
+
+      <p class="sub-header">Escala Neutral</p>
+      <div class="grid-colors">
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#F8FAFC"></div>
+          <div class="swatch-info"><span class="swatch-label">neutral-100</span><span class="swatch-hex">#F8FAFC</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#E2E8F0"></div>
+          <div class="swatch-info"><span class="swatch-label">neutral-200</span><span class="swatch-hex">#E2E8F0</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#CBD5E1"></div>
+          <div class="swatch-info"><span class="swatch-label">neutral-300</span><span class="swatch-hex">#CBD5E1</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#94A3B8"></div>
+          <div class="swatch-info"><span class="swatch-label">neutral-400</span><span class="swatch-hex">#94A3B8</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#B1C0D0"></div>
+          <div class="swatch-info"><span class="swatch-label">neutral-500</span><span class="swatch-hex">#B1C0D0</span></div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#7D8FA9"></div>
+          <div class="swatch-info"><span class="swatch-label">neutral-600</span><span class="swatch-hex">#7D8FA9</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TOKENS SEMÂNTICOS ── -->
+  <section class="section">
+    <div class="container">
+      <p class="section-label">Semântica</p>
+      <h2 class="section-title">Tokens Semânticos</h2>
+
+      <p class="sub-header">Surface</p>
+      <div class="grid-semantic">
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#06090E"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">surface-page</span>
+            <span class="swatch-desc">Background da página</span>
+            <span class="swatch-token">var(--surface-page)</span>
+          </div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#0C121D"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">surface-raised</span>
+            <span class="swatch-desc">Superfície elevada</span>
+            <span class="swatch-token">var(--surface-raised)</span>
+          </div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#131B2B"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">surface-overlay</span>
+            <span class="swatch-desc">Cards overlay</span>
+            <span class="swatch-token">var(--surface-overlay)</span>
+          </div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#1E293B"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">surface-active</span>
+            <span class="swatch-desc">Estado ativo</span>
+            <span class="swatch-token">var(--surface-active)</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="sub-header">Content</p>
+      <div class="grid-semantic">
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#F8FAFC"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">content-strong</span>
+            <span class="swatch-desc">Texto principal</span>
+            <span class="swatch-token">var(--content-strong)</span>
+          </div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#B1C0D0"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">content-default</span>
+            <span class="swatch-desc">Texto secundário</span>
+            <span class="swatch-token">var(--content-default)</span>
+          </div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#7D8FA9"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">content-subtle</span>
+            <span class="swatch-desc">Labels / terciário</span>
+            <span class="swatch-token">var(--content-subtle)</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="sub-header">Interactive</p>
+      <div class="grid-semantic">
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#3A88C4"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">interactive-default</span>
+            <span class="swatch-desc">Estado padrão</span>
+            <span class="swatch-token">var(--interactive-default)</span>
+          </div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#47A1E6"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">interactive-hover</span>
+            <span class="swatch-desc">Hover</span>
+            <span class="swatch-token">var(--interactive-hover)</span>
+          </div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#6AAEDE"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">interactive-pressed</span>
+            <span class="swatch-desc">Pressed / accent</span>
+            <span class="swatch-token">var(--interactive-pressed)</span>
+          </div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:rgba(58,136,196,0.12)"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">interactive-muted</span>
+            <span class="swatch-desc">Background sutil</span>
+            <span class="swatch-token">var(--interactive-muted)</span>
+          </div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:rgba(58,136,196,0.30)"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">interactive-glow</span>
+            <span class="swatch-desc">Glow effect</span>
+            <span class="swatch-token">var(--interactive-glow)</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="sub-header">Border</p>
+      <div class="grid-semantic">
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:rgba(148,163,184,0.10)"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">border-default</span>
+            <span class="swatch-desc">Borda padrão</span>
+            <span class="swatch-token">var(--border-default)</span>
+          </div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:rgba(148,163,184,0.20)"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">border-strong</span>
+            <span class="swatch-desc">Borda hover</span>
+            <span class="swatch-token">var(--border-strong)</span>
+          </div>
+        </div>
+        <div class="glass-card swatch">
+          <div class="swatch-color" style="background:#3A88C4"></div>
+          <div class="swatch-info">
+            <span class="swatch-label">border-active</span>
+            <span class="swatch-desc">Borda ativa</span>
+            <span class="swatch-token">var(--border-active)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TIPOGRAFIA ── -->
+  <section class="section">
+    <div class="container">
+      <p class="section-label">Type</p>
+      <h2 class="section-title">Tipografia</h2>
+
+      <div class="grid-2col">
+        <div class="glass-card">
+          <div class="type-card">
+            <p class="type-label">Urbanist · Headlines</p>
+            <p style="font-family:'Urbanist',sans-serif;font-size:48px;font-weight:600;line-height:1.1;color:var(--content-strong);margin-bottom:10px;">Display 48</p>
+            <p style="font-family:'Urbanist',sans-serif;font-size:36px;font-weight:600;line-height:1.2;color:var(--content-strong);margin-bottom:10px;">Heading 36</p>
+            <p style="font-family:'Urbanist',sans-serif;font-size:28px;font-weight:600;line-height:1.3;color:var(--content-strong);margin-bottom:10px;">Heading 28</p>
+            <p style="font-family:'Urbanist',sans-serif;font-size:22px;font-weight:500;line-height:1.4;color:var(--content-default);">Subheading 22</p>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="type-card">
+            <p class="type-label">Inter · Body &amp; UI</p>
+            <p style="font-size:18px;font-weight:600;color:var(--content-strong);margin-bottom:10px;">Body Large — semibold</p>
+            <p style="font-size:16px;font-weight:400;color:var(--content-default);margin-bottom:10px;">Body regular — lorem ipsum dolor sit amet consectetur adipiscing.</p>
+            <p style="font-size:14px;font-weight:500;color:var(--content-default);margin-bottom:10px;">Label 14 — medium</p>
+            <p style="font-size:12px;font-weight:400;color:var(--content-subtle);">Caption 12 — normal</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card" style="margin-top:20px;text-align:center;padding:40px;">
+        <p class="type-label">.text-gradient</p>
+        <p style="font-family:'Urbanist',sans-serif;font-size:52px;font-weight:600;background:linear-gradient(135deg,#F8FAFC 0%,#94A3B8 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">
+          Grupo Cisne
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CLASSES UTILITÁRIAS ── -->
+  <section class="section">
+    <div class="container">
+      <p class="section-label">Utils</p>
+      <h2 class="section-title">Classes Utilitárias</h2>
+
+      <div class="grid-3col">
+        <div class="glass-card util-item"><p class="util-name">.glass-card</p><p class="util-desc">backdrop-filter blur(16px), borda sutil, hover elevado</p></div>
+        <div class="glass-card util-item"><p class="util-name">.glass-strong</p><p class="util-desc">backdrop-filter blur(24px), fundo mais opaco</p></div>
+        <div class="glass-card util-item"><p class="util-name">.hero-mesh</p><p class="util-desc">radial gradient azul difuso via ::before</p></div>
+        <div class="glass-card util-item"><p class="util-name">.text-gradient</p><p class="util-desc">texto com fade strong → neutral</p></div>
+        <div class="glass-card util-item"><p class="util-name">.glow-soft</p><p class="util-desc">box-shadow azul suave (40px)</p></div>
+        <div class="glass-card util-item"><p class="util-name">.glow-mid</p><p class="util-desc">box-shadow azul médio (60px)</p></div>
+        <div class="glass-card util-item"><p class="util-name">.animate-marquee</p><p class="util-desc">carrossel infinito, pausa no hover</p></div>
+        <div class="glass-card util-item"><p class="util-name">.section-gradient-top</p><p class="util-desc">gradient blue-900 → blue-1000</p></div>
+        <div class="glass-card util-item"><p class="util-name">.section-gradient-alt</p><p class="util-desc">background blue-900 sólido</p></div>
+      </div>
+
+      <p class="sub-header" style="margin-top:40px;">Demonstração Visual</p>
+      <div class="grid-3col">
+        <div class="glass-card demo-card"><span class="demo-label">.glass-card</span></div>
+        <div class="glass-strong demo-card"><span class="demo-label">.glass-strong</span></div>
+        <div style="border:1px solid var(--border-default);border-radius:20px;" class="demo-card">
+          <div class="glow-demo">
+            <div class="glow-pill glow-soft">.glow-soft</div>
+            <div class="glow-pill glow-mid">.glow-mid</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BOTÕES ── -->
+  <section class="section">
+    <div class="container">
+      <p class="section-label">Components</p>
+      <h2 class="section-title">Botões</h2>
+
+      <div class="glass-card">
+        <div class="btn-row">
+          <button class="btn btn-primary">Primary</button>
+          <button class="btn btn-secondary">Secondary</button>
+          <button class="btn btn-ghost">Ghost</button>
+          <button class="btn btn-disabled" disabled>Disabled</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    Design System — Grupo Cisne &nbsp;·&nbsp; IDV Dark Mode
+  </footer>
+
+</body>
+</html>
